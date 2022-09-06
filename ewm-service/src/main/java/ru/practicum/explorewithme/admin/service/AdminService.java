@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.admin.service;
 
+import ru.practicum.explorewithme.category.dto.CategoryDto;
 import ru.practicum.explorewithme.user.dto.ReturnUserDto;
 import ru.practicum.explorewithme.user.dto.UserDto;
 
@@ -14,4 +15,10 @@ public interface AdminService {
     void deleteUser(Long requesterId, Long id);
 
     ReturnUserDto activateUser(Long requesterId, Long id);
+
+    CategoryDto createCategory(Long requesterId, CategoryDto categoryDto);
+
+    CategoryDto patchCategory(Long requesterId, CategoryDto categoryDto);
+
+    void deleteCategory(Long requesterId, Long catId);
 }

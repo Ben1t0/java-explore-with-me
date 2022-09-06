@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.explorewithme.admin.exception.AccessDeniedException;
+import ru.practicum.explorewithme.category.exception.CategoryNotFoundException;
+import ru.practicum.explorewithme.event.exception.EventNotFoundException;
 import ru.practicum.explorewithme.user.exception.UserAlreadyExistsException;
 import ru.practicum.explorewithme.user.exception.UserNotFoundException;
 import ru.practicum.explorewithme.validation.ValidationErrorResponse;
@@ -47,7 +49,7 @@ public class ErrorHandlingControllerAdvice {
         return Map.of("error", ex.getMessage());
     }*/
 
-    @ExceptionHandler({UserNotFoundException.class})
+    @ExceptionHandler({UserNotFoundException.class, CategoryNotFoundException.class, EventNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFoundException(RuntimeException e) {
         return e.getMessage();
@@ -72,6 +74,12 @@ public class ErrorHandlingControllerAdvice {
         return e.getMessage();
     }
 
+    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleSqlExceptions(RuntimeException e) {
+        Throwable ex = e.getCause().getCause();
+        return ex.getMessage();
+    }
 
     /*@ExceptionHandler({WrongBookingTimeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.admin.service.AdminService;
+import ru.practicum.explorewithme.category.dto.CategoryDto;
 import ru.practicum.explorewithme.user.dto.ReturnUserDto;
 import ru.practicum.explorewithme.user.dto.UserDto;
 import ru.practicum.explorewithme.validation.Validation;
@@ -51,8 +52,27 @@ public class AdminController {
     }
     //endregion
 
-    //region /Admin/events Handlers
+    //region /Admin/Categories Handlers
 
+    @PostMapping("/categories")
+    @Validated(Validation.OnCreate.class)
+    public CategoryDto createCategory(@RequestHeader("X-User-Id") Long requesterId,
+                                      @Valid @RequestBody CategoryDto categoryDto) {
+        return adminService.createCategory(requesterId, categoryDto);
+    }
 
-    //
+    @PatchMapping("/categories")
+    @Validated(Validation.OnPatch.class)
+    public CategoryDto patchCategory(@RequestHeader("X-User-Id") Long requesterId,
+                                     @Valid @RequestBody CategoryDto categoryDto) {
+        return adminService.patchCategory(requesterId, categoryDto);
+    }
+
+    @DeleteMapping("/categories/{catId}")
+    public void deleteCategory(@RequestHeader("X-User-Id") Long requesterId,
+                               @PathVariable Long catId) {
+        adminService.deleteCategory(requesterId, catId);
+    }
+
+    //endregion
 }
