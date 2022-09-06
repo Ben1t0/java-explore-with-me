@@ -9,7 +9,6 @@ import ru.practicum.explorewithme.user.dto.UserDto;
 import ru.practicum.explorewithme.user.dto.UserMapper;
 import ru.practicum.explorewithme.user.exception.UserNotFoundException;
 import ru.practicum.explorewithme.user.model.User;
-import ru.practicum.explorewithme.user.model.UserRole;
 import ru.practicum.explorewithme.user.model.UserState;
 import ru.practicum.explorewithme.user.repository.UserRepository;
 import ru.practicum.explorewithme.utils.OffsetBasedPageRequest;
@@ -51,7 +50,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public ReturnUserDto createUser(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
-        user.setRole(UserRole.USER);
         user.setState(UserState.INACTIVE);
         return UserMapper.toReturnUserDto(userRepository.save(user));
     }

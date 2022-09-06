@@ -7,13 +7,15 @@ import java.util.Collection;
 
 public interface CategoryService {
 
-    Category createCategory(CategoryDto categoryDto);
+    CategoryDto createCategory(CategoryDto categoryDto);
 
     void deleteCategory(Long catId);
 
-    Category patchCategory(CategoryDto categoryDto);
+    CategoryDto patchCategory(CategoryDto categoryDto);
 
-    CategoryDto getById(Long id);
+    CategoryDto getCategoryDtoByIdOrThrow(Long id);
+
+    Category getCategoryByIdOrThrow(Long id);
 
     Collection<CategoryDto> getAll(Integer from, Integer size);
 }

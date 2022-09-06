@@ -28,7 +28,7 @@ public class EventController {
                                                @RequestParam(value = "sort") SortType sortType,
                                                @RequestParam(value = "from", defaultValue = "0") Integer from,
                                                @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return eventService.find(text, catIds, paid, start, end, onlyAvailable, sortType, from, size);
+        return eventService.findPublicEvent(text, catIds, paid, start, end, onlyAvailable, sortType, from, size);
 
     }
 

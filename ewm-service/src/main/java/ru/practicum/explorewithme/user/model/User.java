@@ -22,7 +22,5 @@ public class User {
     private String name;
     private String email;
     @Enumerated(EnumType.STRING)
-    private UserRole role;
-    @Enumerated(EnumType.STRING)
     private UserState state;
 }

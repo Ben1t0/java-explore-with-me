@@ -21,21 +21,21 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public Category createCategory(CategoryDto categoryDto) {
-        return categoryRepository.save(CategoryMapper.fromDto(categoryDto));
+    public CategoryDto createCategory(CategoryDto categoryDto) {
+        return CategoryMapper.toDto(categoryRepository.save(CategoryMapper.fromDto(categoryDto)));
     }
 
     @Override
     public void deleteCategory(Long catId) {
-        getCategoryOrThrow(catId);
+        getCategoryByIdOrThrow(catId);
         categoryRepository.deleteById(catId);
     }
 
     @Override
-    public Category patchCategory(CategoryDto categoryDto) {
-        Category cat = getCategoryOrThrow(categoryDto.getId());
+    public CategoryDto patchCategory(CategoryDto categoryDto) {
+        Category cat = getCategoryByIdOrThrow(categoryDto.getId());
         cat.setName(categoryDto.getName());
-        return categoryRepository.save(cat);
+        return CategoryMapper.toDto(categoryRepository.save(cat));
     }
 
     @Override
@@ -45,11 +45,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto getById(Long id) {
-        return CategoryMapper.toDto(getCategoryOrThrow(id));
+    public CategoryDto getCategoryDtoByIdOrThrow(Long id) {
+        return CategoryMapper.toDto(getCategoryByIdOrThrow(id));
     }
 
-    private Category getCategoryOrThrow(Long id) {
+    @Override
+    public Category getCategoryByIdOrThrow(Long id) {
         return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 

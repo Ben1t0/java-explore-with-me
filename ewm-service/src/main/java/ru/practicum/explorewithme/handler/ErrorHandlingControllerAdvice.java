@@ -5,10 +5,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.explorewithme.admin.exception.AccessDeniedException;
 import ru.practicum.explorewithme.category.exception.CategoryNotFoundException;
+import ru.practicum.explorewithme.event.exception.EventBadRequestException;
+import ru.practicum.explorewithme.event.exception.EventDateToEarlyException;
 import ru.practicum.explorewithme.event.exception.EventNotFoundException;
+import ru.practicum.explorewithme.partisipationrequest.exception.RequestNotFoundException;
 import ru.practicum.explorewithme.user.exception.UserAlreadyExistsException;
+import ru.practicum.explorewithme.user.exception.UserNotActivatedException;
 import ru.practicum.explorewithme.user.exception.UserNotFoundException;
 import ru.practicum.explorewithme.validation.ValidationErrorResponse;
 import ru.practicum.explorewithme.validation.Violation;
@@ -49,24 +52,18 @@ public class ErrorHandlingControllerAdvice {
         return Map.of("error", ex.getMessage());
     }*/
 
-    @ExceptionHandler({UserNotFoundException.class, CategoryNotFoundException.class, EventNotFoundException.class})
+    @ExceptionHandler({UserNotFoundException.class, CategoryNotFoundException.class, EventNotFoundException.class,
+            RequestNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFoundException(RuntimeException e) {
         return e.getMessage();
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public String handleAccessDeniedException(RuntimeException e) {
+    @ExceptionHandler(UserNotActivatedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleUserInactiveException(RuntimeException e) {
         return e.getMessage();
     }
-
-/*
-    @ExceptionHandler(ItemUnavailableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleItemUnavailableException(RuntimeException e) {
-        return e.getMessage();
-    }*/
 
     @ExceptionHandler({UserAlreadyExistsException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -81,12 +78,13 @@ public class ErrorHandlingControllerAdvice {
         return ex.getMessage();
     }
 
-    /*@ExceptionHandler({WrongBookingTimeException.class})
+    @ExceptionHandler({EventDateToEarlyException.class, EventBadRequestException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleCustomRuntimeExceptions(RuntimeException e) {
+    public String handleEventExceptions(RuntimeException e) {
         return e.getMessage();
     }
 
+    /*
     @ExceptionHandler(BookingAlreadyChecked.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleBookingAlreadyCheckedException(RuntimeException e) {

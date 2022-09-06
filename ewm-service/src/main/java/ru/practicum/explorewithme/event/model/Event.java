@@ -8,9 +8,10 @@ import ru.practicum.explorewithme.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -46,5 +47,6 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventState state;
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ParticipationRequest> participationRequests;
+    @Builder.Default
+    private List<ParticipationRequest> participationRequests = new ArrayList<>();
 }

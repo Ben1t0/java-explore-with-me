@@ -17,7 +17,6 @@ public class UserMapper {
                 .email(user.getEmail())
                 .name(user.getName())
                 .state(user.getState().toString())
-                .role(user.getRole().toString())
                 .build();
     }
 

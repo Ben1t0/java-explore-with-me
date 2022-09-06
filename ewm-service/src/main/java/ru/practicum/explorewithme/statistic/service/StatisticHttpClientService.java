@@ -6,6 +6,11 @@ import org.springframework.stereotype.Service;
 public class StatisticHttpClientService implements StatisticService{
     @Override
     public Long getStatistic(String endpoint) {
-        return null;
+        //TODO
+        if(endpoint.startsWith("/events/")){
+            return 10L;
+        } else{
+            return 0L;
+        }
     }
 }
