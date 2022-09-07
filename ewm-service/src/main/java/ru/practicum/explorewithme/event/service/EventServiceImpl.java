@@ -96,7 +96,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Collection<ShortEventDto> getUserEvents(Long userId, Integer from, Integer size) {
         Pageable page = new OffsetBasedPageRequest(from, size, Sort.by("id"));
-        userService.getUserByIdOrThrow(userId);
+        getActiveUserOrThrow(userId);
 
         return eventRepository.findAllByInitiatorId(userId, page).stream()
                 .map(EventMapper::toShortDto)

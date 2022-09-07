@@ -31,7 +31,7 @@ public class ShortEventDto {
 
     @AllArgsConstructor
     @Getter
-    public static class User{
+    public static class User {
         private Long id;
         private String name;
     }

@@ -7,6 +7,7 @@ import ru.practicum.explorewithme.event.dto.CreateEventDto;
 import ru.practicum.explorewithme.event.dto.FullEventDto;
 import ru.practicum.explorewithme.event.dto.ShortEventDto;
 import ru.practicum.explorewithme.event.service.EventService;
+import ru.practicum.explorewithme.partisipationrequest.dto.CreateRequestDto;
 import ru.practicum.explorewithme.partisipationrequest.dto.ParticipationRequestDto;
 import ru.practicum.explorewithme.partisipationrequest.service.ParticipationRequestService;
 import ru.practicum.explorewithme.validation.Validation;
@@ -52,8 +53,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/events/{eventId}/requests")
-    public Collection<ParticipationRequestDto> getUserRequests(@PathVariable Long userId, @PathVariable Long eventId) {
-        return requestService.getUserRequests(userId, eventId);
+    public Collection<ParticipationRequestDto> getRequestsForUserEvents(@PathVariable Long userId, @PathVariable Long eventId) {
+        return requestService.getRequestsForUserEvents(userId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/confirm")
@@ -68,5 +69,22 @@ public class UserController {
                                                  @PathVariable Long eventId,
                                                  @PathVariable Long reqId) {
         return requestService.rejectRequest(userId, eventId, reqId);
+    }
+
+    @GetMapping("/{userId}/requests")
+    public Collection<ParticipationRequestDto> getUserEvents(@PathVariable Long userId) {
+        return requestService.getUserRequests(userId);
+    }
+
+    @PostMapping("/{userId}/requests")
+    @Validated(Validation.OnCreate.class)
+    public ParticipationRequestDto createEvent(@PathVariable Long userId,
+                                               @Valid @RequestBody CreateRequestDto createRequestDto) {
+        return requestService.createRequest(userId, createRequestDto);
+    }
+
+    @PatchMapping("/{userId}/requests/{reqId}/cancel")
+    public ParticipationRequestDto patchEvent(@PathVariable Long userId, @PathVariable Long reqId) {
+        return requestService.cancelRequest(userId, reqId);
     }
 }

@@ -5,6 +5,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.category.dto.CategoryDto;
 import ru.practicum.explorewithme.category.service.CategoryService;
+import ru.practicum.explorewithme.compilation.dto.CompilationDto;
+import ru.practicum.explorewithme.compilation.service.CompilationService;
 import ru.practicum.explorewithme.user.dto.ReturnUserDto;
 import ru.practicum.explorewithme.user.dto.UserDto;
 import ru.practicum.explorewithme.user.service.UserService;
@@ -22,6 +24,8 @@ public class AdminController {
 
     private final UserService userService;
     private final CategoryService categoryService;
+
+    private final CompilationService compilationService;
 
     //region /Admin/Users Handlers
 
@@ -66,6 +70,40 @@ public class AdminController {
     @DeleteMapping("/categories/{catId}")
     public void deleteCategory(@PathVariable Long catId) {
         categoryService.deleteCategory(catId);
+    }
+
+    //endregion
+
+    //region /Admin/Compilations Handlers
+
+    @PostMapping("/compilations")
+    public CompilationDto createCompilation(@Valid @RequestBody CompilationDto compilationDto) {
+        return compilationService.createCompilation(compilationDto);
+    }
+
+    @DeleteMapping("/compilations/{compId}")
+    public void deleteCompilation(@PathVariable Long compId) {
+        compilationService.deleteCompilation(compId);
+    }
+
+    @DeleteMapping("/compilations/{compId}/events/{eventId}")
+    public CompilationDto deleteEventFromCompilation(@PathVariable Long compId, @PathVariable Long eventId) {
+        return compilationService.deleteEventFromCompilation(compId, eventId);
+    }
+
+    @PatchMapping("/compilations/{compId}/events/{eventId}")
+    public CompilationDto addEventToCompilation(@PathVariable Long compId, @PathVariable Long eventId) {
+        return compilationService.addEventToCompilation(compId, eventId);
+    }
+
+    @DeleteMapping("/compilations/{compId}/pin")
+    public CompilationDto unpinCompilation(@PathVariable Long compId) {
+        return compilationService.unpinCompilation(compId);
+    }
+
+    @PatchMapping("/compilations/{compId}/pin")
+    public CompilationDto pinCompilation(@PathVariable Long compId) {
+        return compilationService.pinCompilation(compId);
     }
 
     //endregion
