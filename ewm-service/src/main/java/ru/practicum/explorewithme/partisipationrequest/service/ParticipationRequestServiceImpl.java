@@ -49,6 +49,20 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (!request.getEvent().getId().equals(eventId) || !request.getEvent().getInitiator().getId().equals(userId)) {
             throw new RequestNotFoundException(reqId);
         }
+
+        if (request.getEvent().getParticipantLimit() > 0) {
+            long confirmedRequests = request.getEvent().getParticipationRequests().stream()
+                    .filter(r -> r.getStatus() == ParticipationRequestStatus.APPROVED)
+                    .count();
+            if (confirmedRequests >= request.getEvent().getParticipantLimit()) {
+                throw new EventBadRequestException("Event participant limit reached");
+            } else if (confirmedRequests == request.getEvent().getParticipantLimit() - 1) {
+                request.getEvent().getParticipationRequests().stream()
+                        .filter(r -> !r.getId().equals(reqId) && r.getStatus() == ParticipationRequestStatus.PENDING)
+                        .peek(r -> r.setStatus(ParticipationRequestStatus.REJECTED))
+                        .peek(requestRepository::save);
+            }
+        }
         request.setStatus(ParticipationRequestStatus.APPROVED);
 
         return RequestMapper.toDto(requestRepository.save(request));
@@ -85,8 +99,10 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
             throw new EventNotFoundException(event.getId());
         }
 
-        if (event.getParticipantLimit() > 0 && event.getParticipationRequests().size() >= event.getParticipantLimit()) {
-            throw new EventBadRequestException("Event is full");
+        if (event.getParticipantLimit() > 0 && event.getParticipationRequests().stream()
+                .filter(r -> r.getStatus() == ParticipationRequestStatus.APPROVED)
+                .count() >= event.getParticipantLimit()) {
+            throw new EventBadRequestException("Event participant limit reached");
         }
 
         ParticipationRequest request = ParticipationRequest.builder()
