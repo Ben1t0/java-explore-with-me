@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users", schema = "public")
 public class User {
-
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +20,4 @@ public class User {
     private Long id;
     private String name;
     private String email;
-    @Enumerated(EnumType.STRING)
-    private UserState state;
 }

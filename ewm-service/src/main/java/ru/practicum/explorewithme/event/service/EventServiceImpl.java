@@ -13,9 +13,7 @@ import ru.practicum.explorewithme.event.exception.EventNotFoundException;
 import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.event.model.EventState;
 import ru.practicum.explorewithme.event.repository.EventRepository;
-import ru.practicum.explorewithme.user.exception.UserNotActivatedException;
 import ru.practicum.explorewithme.user.model.User;
-import ru.practicum.explorewithme.user.model.UserState;
 import ru.practicum.explorewithme.user.service.UserService;
 import ru.practicum.explorewithme.utils.OffsetBasedPageRequest;
 
@@ -89,7 +87,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Collection<ShortEventDto> getUserEvents(Long userId, Integer from, Integer size) {
         Pageable page = new OffsetBasedPageRequest(from, size, Sort.by("id"));
-        getActiveUserOrThrow(userId);
+        userService.getUserByIdOrThrow(userId);
 
         return eventRepository.findAllByInitiatorId(userId, page).stream()
                 .map(EventMapper::toShortDto)
@@ -103,7 +101,7 @@ public class EventServiceImpl implements EventService {
             throw new EventDateToEarlyException();
         }
 
-        User user = getActiveUserOrThrow(userId);
+        User user = userService.getUserByIdOrThrow(userId);
 
         Category category = categoryService.getCategoryByIdOrThrow(createEventDto.getCategory());
 
@@ -120,7 +118,7 @@ public class EventServiceImpl implements EventService {
     public FullEventDto patchEvent(Long userId, CreateEventDto createEventDto) {
         LocalDateTime now = LocalDateTime.now();
 
-        User user = getActiveUserOrThrow(userId);
+        User user = userService.getUserByIdOrThrow(userId);
         Event eventToUpdate = getEventByIdOrThrow(createEventDto.getId()).toBuilder().build();
 
         if (!eventToUpdate.getInitiator().getId().equals(user.getId())) {
@@ -168,7 +166,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public FullEventDto getUserEvent(Long userId, Long eventId) {
-        User user = getActiveUserOrThrow(userId);
+        User user = userService.getUserByIdOrThrow(userId);
         Event event = getEventByIdOrThrow(eventId);
 
         if (!event.getInitiator().getId().equals(user.getId())) {
@@ -179,7 +177,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public FullEventDto cancelUserEvent(Long userId, Long eventId) {
-        User user = getActiveUserOrThrow(userId);
+        User user = userService.getUserByIdOrThrow(userId);
         Event eventToCancel = getEventByIdOrThrow(eventId).toBuilder().build();
 
         if (!eventToCancel.getInitiator().getId().equals(user.getId())) {
@@ -295,13 +293,5 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event getEventByIdOrThrow(long id) {
         return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
-    }
-
-    private User getActiveUserOrThrow(long id) {
-        User user = userService.getUserByIdOrThrow(id);
-        if (user.getState() == UserState.INACTIVE) {
-            throw new UserNotActivatedException(id);
-        }
-        return user;
     }
 }

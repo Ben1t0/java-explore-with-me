@@ -53,10 +53,6 @@ public class AdminController {
         userService.deleteUser(id);
     }
 
-    @PatchMapping("/users/{userId}/activate")
-    public ReturnUserDto activateUser(@PathVariable(name = "userId") Long id) {
-        return userService.activateUser(id);
-    }
     //endregion
 
     //region /Admin/Categories Handlers

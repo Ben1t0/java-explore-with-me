@@ -14,9 +14,7 @@ import ru.practicum.explorewithme.partisipationrequest.exception.RequestNotFound
 import ru.practicum.explorewithme.partisipationrequest.model.ParticipationRequest;
 import ru.practicum.explorewithme.partisipationrequest.model.ParticipationRequestStatus;
 import ru.practicum.explorewithme.partisipationrequest.repository.ParticipationRequestRepository;
-import ru.practicum.explorewithme.user.exception.UserNotActivatedException;
 import ru.practicum.explorewithme.user.model.User;
-import ru.practicum.explorewithme.user.model.UserState;
 import ru.practicum.explorewithme.user.service.UserService;
 
 import java.time.LocalDateTime;
@@ -34,7 +32,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     @Override
     public Collection<ParticipationRequestDto> getRequestsForUserEvents(Long userId, Long eventId) {
         Event event = eventService.getEventByIdOrThrow(eventId);
-        User user = getActiveUserOrThrow(userId);
+        User user = userService.getUserByIdOrThrow(userId);
         if (!event.getInitiator().getId().equals(user.getId())) {
             throw new EventNotFoundException(eventId);
         }
@@ -46,7 +44,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     public ParticipationRequestDto approveRequest(Long userId, Long eventId, Long reqId) {
-        getActiveUserOrThrow(userId);
+        userService.getUserByIdOrThrow(userId);
         ParticipationRequest request = getRequestOrThrow(reqId);
         if (!request.getEvent().getId().equals(eventId) || !request.getEvent().getInitiator().getId().equals(userId)) {
             throw new RequestNotFoundException(reqId);
@@ -58,7 +56,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     public ParticipationRequestDto rejectRequest(Long userId, Long eventId, Long reqId) {
-        getActiveUserOrThrow(userId);
+        userService.getUserByIdOrThrow(userId);
         ParticipationRequest request = getRequestOrThrow(reqId);
         if (!request.getEvent().getId().equals(eventId) || !request.getEvent().getInitiator().getId().equals(userId)) {
             throw new RequestNotFoundException(reqId);
@@ -70,7 +68,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     public Collection<ParticipationRequestDto> getUserRequests(Long userId) {
-        getActiveUserOrThrow(userId);
+        userService.getUserByIdOrThrow(userId);
 
         return requestRepository.findAllByRequesterId(userId).stream()
                 .map(RequestMapper::toDto)
@@ -80,7 +78,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     @Override
     public ParticipationRequestDto createRequest(Long userId, CreateRequestDto createRequestDto) {
         LocalDateTime now = LocalDateTime.now();
-        User user = getActiveUserOrThrow(userId);
+        User user = userService.getUserByIdOrThrow(userId);
         Event event = eventService.getEventByIdOrThrow(createRequestDto.getEvent());
 
         if (event.getInitiator().getId().equals(userId) || event.getState() != EventState.PUBLISHED) {
@@ -108,7 +106,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     public ParticipationRequestDto cancelRequest(Long userId, Long reqId) {
-        getActiveUserOrThrow(userId);
+        userService.getUserByIdOrThrow(userId);
         ParticipationRequest request = getRequestOrThrow(reqId);
         if (!request.getRequester().getId().equals(userId)) {
             throw new RequestNotFoundException(reqId);
@@ -120,13 +118,5 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     private ParticipationRequest getRequestOrThrow(Long id) {
         return requestRepository.findById(id).orElseThrow(() -> new RequestNotFoundException(id));
-    }
-
-    private User getActiveUserOrThrow(long id) {
-        User user = userService.getUserByIdOrThrow(id);
-        if (user.getState() == UserState.INACTIVE) {
-            throw new UserNotActivatedException(id);
-        }
-        return user;
     }
 }

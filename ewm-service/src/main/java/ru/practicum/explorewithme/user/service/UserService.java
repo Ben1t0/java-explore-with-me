@@ -22,6 +22,4 @@ public interface UserService {
     void deleteUser(Long id);
 
     Collection<ReturnUserDto> getUsersByIdWithPagination(Collection<Long> ids, Integer from, Integer size);
-
-    ReturnUserDto activateUser(Long id);
 }
