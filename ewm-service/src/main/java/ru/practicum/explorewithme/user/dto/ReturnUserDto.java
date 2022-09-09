@@ -10,5 +10,4 @@ public class ReturnUserDto {
     private String name;
     private String email;
     private String state;
-    private String role;
 }

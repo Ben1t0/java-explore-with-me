@@ -1,141 +1,107 @@
 package ru.practicum.explorewithme.handler;
 
+import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.practicum.explorewithme.category.exception.CategoryNotFoundException;
 import ru.practicum.explorewithme.compilation.exception.CompilationNotFoundException;
 import ru.practicum.explorewithme.event.exception.EventBadRequestException;
 import ru.practicum.explorewithme.event.exception.EventDateToEarlyException;
 import ru.practicum.explorewithme.event.exception.EventNotFoundException;
 import ru.practicum.explorewithme.partisipationrequest.exception.RequestNotFoundException;
-import ru.practicum.explorewithme.user.exception.UserAlreadyExistsException;
-import ru.practicum.explorewithme.user.exception.UserNotActivatedException;
 import ru.practicum.explorewithme.user.exception.UserNotFoundException;
-import ru.practicum.explorewithme.validation.ValidationErrorResponse;
-import ru.practicum.explorewithme.validation.Violation;
+import ru.practicum.explorewithme.utils.ApiError;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice
-public class ErrorHandlingControllerAdvice {
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorResponse onConstraintValidationException(ConstraintViolationException e) {
-        final List<Violation> violations = e.getConstraintViolations().stream()
-                .map(
-                        violation -> new Violation(
-                                violation.getPropertyPath().toString(),
-                                violation.getMessage()
-                        )
-                )
-                .collect(Collectors.toList());
-        return new ValidationErrorResponse(violations);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorResponse onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        final List<Violation> violations = e.getBindingResult().getFieldErrors().stream()
-                .map(error -> new Violation(error.getField(), error.getDefaultMessage()))
-                .collect(Collectors.toList());
-        return new ValidationErrorResponse(violations);
-    }
-
-
-    @ExceptionHandler(UserNotActivatedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleUserInactiveException(RuntimeException e) {
-        return e.getMessage();
-    }
-
-    @ExceptionHandler({UserAlreadyExistsException.class})
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleAlreadyExistException(RuntimeException e) {
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleSqlExceptions(RuntimeException e) {
-        Throwable ex = e.getCause().getCause();
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler({EventDateToEarlyException.class, EventBadRequestException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleEventExceptions(RuntimeException e) {
-        return e.getMessage();
-    }
-
-    @ExceptionHandler({UserNotFoundException.class, CategoryNotFoundException.class, EventNotFoundException.class,
-            RequestNotFoundException.class, CompilationNotFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleNotFoundException(RuntimeException e) {
-        return e.getMessage();
-    }
-
-
-    //TODO: exception ApiError
-
-    /*@ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiError> handleException(RuntimeException e){
-        return null;
-    }*/
-
-
-    /**
-     * Handle MethodArgumentNotValidException. Triggered when an object fails @Valid validation.
-     */
-    /*@Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            HttpHeaders headers,
-            HttpStatus status,
-            WebRequest request) {
-        ApiError apiError = new ApiError(BAD_REQUEST);
-        apiError.setMessage("Validation error");
-        apiError.addValidationErrors(ex.getBindingResult().getFieldErrors());
-        apiError.addValidationError(ex.getBindingResult().getGlobalErrors());
-        return buildResponseEntity(apiError);
-    }*/
-
+@ControllerAdvice
+public class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandler {
     /**
      * Handles ConstraintViolationException. Thrown when @Validated fails.
      */
-    /*@ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Object> handleConstraintViolation(
-            ConstraintViolationException ex) {
-        ApiError apiError = new ApiError(BAD_REQUEST);
-        apiError.setMessage("Validation error");
-        apiError.addValidationErrors(ex.getConstraintViolations());
-        return buildResponseEntity(apiError);
-    }*/
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> onConstraintValidationException(ConstraintViolationException e) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setReason("Validation error");
+        apiError.setErrors(e.getConstraintViolations().stream()
+                .map(cv -> "Object: " + cv.getLeafBean().toString() +
+                        ". Field: " + ((PathImpl) cv.getPropertyPath()).getLeafNode().asString() +
+                        ". Value: " + (cv.getInvalidValue() != null ? cv.getInvalidValue().toString() : "null") +
+                        ". Message: " + cv.getMessage())
+                .collect(Collectors.toList()));
+        apiError.setMessage("");
+        return createResponse(apiError);
+    }
 
     /**
      * Handle HttpMessageNotReadableException. Happens when request JSON is malformed.
      */
-    /*@Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(
-            HttpMessageNotReadableException ex,
-            HttpHeaders headers,
-            HttpStatus status,
-            WebRequest request) {
-        ServletWebRequest servletWebRequest = (ServletWebRequest) request;
-        log.info("{} to {}", servletWebRequest.getHttpMethod(),
-                servletWebRequest.getRequest().getServletPath());
-        String error = "Malformed JSON request";
-        return buildResponseEntity(new ApiError(BAD_REQUEST, error, ex));
-    }*/
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage("Malformed JSON request");
+        apiError.setReason(ex.getCause().getMessage());
+        return createResponse(apiError);
+    }
 
-    /*    @ExceptionHandler(BookingUnknownStateException.class)
-        @ResponseStatus(HttpStatus.BAD_REQUEST)
-        public Map<String, String> handleConflict(BookingUnknownStateException ex) {
-            return Map.of("error", ex.getMessage());
-        }*/
+    /**
+     * Handle MethodArgumentNotValidException. Triggered when an object fails @Valid validation.
+     */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setErrors(ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> "Field: " + error.getField() + ". Error: " + error.getDefaultMessage() +
+                        ". Value: " + error.getRejectedValue())
+                .collect(Collectors.toList()));
+        apiError.setMessage("During [" + ex.getBindingResult().getObjectName() + "] validation " +
+                ex.getBindingResult().getFieldErrors().size() + " errors were found");
+        apiError.setReason("Incorrectly made request.");
+        return createResponse(apiError);
+    }
+
+    @ExceptionHandler({UserNotFoundException.class, CategoryNotFoundException.class, EventNotFoundException.class,
+            RequestNotFoundException.class, CompilationNotFoundException.class})
+    public ResponseEntity<Object> handleNotFoundException(RuntimeException e) {
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        apiError.setReason("The required object was not found.");
+        apiError.setMessage(e.getMessage());
+        return createResponse(apiError);
+    }
+
+    @ExceptionHandler({EventDateToEarlyException.class, EventBadRequestException.class})
+    public ResponseEntity<Object> handleEventExceptions(RuntimeException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,
+                                                                  WebRequest request) {
+        if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+            ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Database error");
+            apiError.setErrors(List.of(ex.getCause().getCause().getMessage()));
+            return createResponse(apiError);
+        }
+        return createResponse(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()));
+    }
+
+    private ResponseEntity<Object> createResponse(ApiError apiError) {
+        return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
 }

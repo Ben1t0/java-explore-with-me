@@ -2,7 +2,6 @@ package ru.practicum.explorewithme.event.model;
 
 import lombok.*;
 import ru.practicum.explorewithme.category.model.Category;
-import ru.practicum.explorewithme.location.model.Location;
 import ru.practicum.explorewithme.partisipationrequest.model.ParticipationRequest;
 import ru.practicum.explorewithme.user.model.User;
 
@@ -41,9 +40,8 @@ public class Event {
     private Category category;
     private Integer participantLimit;
     private boolean requestModeration;
-    @ManyToOne
-    @JoinColumn(name = "location_id")
-    private Location location;
+    private Float latitude;
+    private Float longitude;
     @Enumerated(EnumType.STRING)
     private EventState state;
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)

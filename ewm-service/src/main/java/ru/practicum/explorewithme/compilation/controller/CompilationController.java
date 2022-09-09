@@ -16,13 +16,13 @@ public class CompilationController {
 
     @GetMapping
     public Collection<CompilationDto> getAllCompilations(@RequestParam(value = "pinned") boolean pinned,
-                                                      @RequestParam(value = "from", defaultValue = "0") Integer from,
-                                                      @RequestParam(value = "size", defaultValue = "10") Integer size){
-        return compilationService.getAll(pinned,from ,size);
+                                                         @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                         @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return compilationService.getAll(pinned, from, size);
     }
 
     @GetMapping("/{id}")
-    public CompilationDto getCompilationById(@PathVariable Long id){
+    public CompilationDto getCompilationById(@PathVariable Long id) {
         return compilationService.getCompilationDtoOrThrow(id);
     }
 }

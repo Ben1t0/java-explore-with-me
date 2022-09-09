@@ -1,17 +1,14 @@
 package ru.practicum.explorewithme.event.service;
 
-import ru.practicum.explorewithme.event.dto.CreateEventDto;
-import ru.practicum.explorewithme.event.dto.FullEventDto;
-import ru.practicum.explorewithme.event.dto.ShortEventDto;
-import ru.practicum.explorewithme.event.dto.SortType;
+import ru.practicum.explorewithme.event.dto.*;
 import ru.practicum.explorewithme.event.model.Event;
+import ru.practicum.explorewithme.event.model.EventState;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 
-public interface EventService  {
-    Collection<ShortEventDto> findPublicEvent(String text, List<Long> catIds, boolean paid,
+public interface EventService {
+    Collection<ShortEventDto> findPublicEvent(String text, Collection<Long> catIds, boolean paid,
                                               LocalDateTime start, LocalDateTime end, boolean onlyAvailable,
                                               SortType sortType, Integer from, Integer size);
 
@@ -28,4 +25,14 @@ public interface EventService  {
     FullEventDto cancelUserEvent(Long userId, Long eventId);
 
     Event getEventByIdOrThrow(long id);
+
+    Collection<FullEventDto> findEvents(Collection<Long> userIds, Collection<EventState> states,
+                                        Collection<Long> catIds, LocalDateTime start, LocalDateTime end, Integer from,
+                                        Integer size);
+
+    FullEventDto adminUpdateEvent(Long eventId, AdminUpdateEventDto dto);
+
+    FullEventDto publishEvent(Long eventId);
+
+    FullEventDto rejectEvent(Long eventId);
 }

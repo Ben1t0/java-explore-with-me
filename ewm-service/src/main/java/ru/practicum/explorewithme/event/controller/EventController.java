@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.event.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.event.dto.FullEventDto;
 import ru.practicum.explorewithme.event.dto.ShortEventDto;
@@ -9,7 +10,7 @@ import ru.practicum.explorewithme.event.service.EventService;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,10 +20,12 @@ public class EventController {
 
     @GetMapping
     public Collection<ShortEventDto> getEvents(@RequestParam(value = "text", defaultValue = "") String text,
-                                               @RequestParam(value = "categories") List<Long> catIds,
+                                               @RequestParam(value = "categories") Set<Long> catIds,
                                                @RequestParam(value = "paid") boolean paid,
+                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                @RequestParam(value = "rangeStart", required = false)
                                                    LocalDateTime start,
+                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                @RequestParam(value = "rangeEnd", required = false) LocalDateTime end,
                                                @RequestParam(value = "onlyAvailable") boolean onlyAvailable,
                                                @RequestParam(value = "sort") SortType sortType,

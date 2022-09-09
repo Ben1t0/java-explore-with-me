@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.explorewithme.validation.Validation;
@@ -25,6 +26,7 @@ public class CreateEventDto {
     private String description;
     @NotNull(groups = Validation.OnCreate.class)
     @Future
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     @NotNull(groups = Validation.OnCreate.class)
     private Location location;
@@ -41,10 +43,8 @@ public class CreateEventDto {
     @Builder
     @Data
     public static class Location {
-        private String name;
-        private Long id;
         @NotNull(groups = Validation.OnCreate.class)
-        private Float lan;
+        private Float lat;
         @NotNull(groups = Validation.OnCreate.class)
         private Float lon;
     }

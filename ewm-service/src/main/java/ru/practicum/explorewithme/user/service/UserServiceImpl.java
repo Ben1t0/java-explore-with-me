@@ -14,7 +14,6 @@ import ru.practicum.explorewithme.user.repository.UserRepository;
 import ru.practicum.explorewithme.utils.OffsetBasedPageRequest;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 //TODO: check functions
@@ -30,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<ReturnUserDto> getUsersByIdWithPagination(List<Long> ids, Integer from, Integer size) {
+    public Collection<ReturnUserDto> getUsersByIdWithPagination(Collection<Long> ids, Integer from, Integer size) {
         Pageable page = new OffsetBasedPageRequest(from, size, Sort.by("id"));
         return userRepository.findAllByIdIn(ids, page).stream()
                 .map(UserMapper::toReturnUserDto)

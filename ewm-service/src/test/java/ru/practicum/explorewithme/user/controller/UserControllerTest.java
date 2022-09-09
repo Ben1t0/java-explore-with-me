@@ -40,7 +40,7 @@ class UserControllerTest {
                 .category(1L)
                 .description("decr")
                 .eventDate(LocalDateTime.now().plusDays(1))
-                .location(CreateEventDto.Location.builder().lan(55.3f).lon(13.54f).build())
+                .location(CreateEventDto.Location.builder().lat(55.3f).lon(13.54f).build())
                 .participantLimit(1500)
                 .paid(true)
                 .title("title")

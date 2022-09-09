@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS events
     category_id        BIGINT                                  NOT NULL,
     participant_limit  INT                                     NOT NULL,
     location_id        BIGINT,
+    latitude           REAL                                    NOT NULL,
+    longitude          REAL                                    NOT NULL,
     state              VARCHAR(20)                             NOT NULL,
     CONSTRAINT pk_event PRIMARY KEY (id),
     CONSTRAINT FK_EVENT_ON_CATEGORY FOREIGN KEY (category_id) REFERENCES categories (id),

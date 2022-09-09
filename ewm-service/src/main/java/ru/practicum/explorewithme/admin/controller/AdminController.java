@@ -1,20 +1,26 @@
 package ru.practicum.explorewithme.admin.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.category.dto.CategoryDto;
 import ru.practicum.explorewithme.category.service.CategoryService;
 import ru.practicum.explorewithme.compilation.dto.CompilationDto;
 import ru.practicum.explorewithme.compilation.service.CompilationService;
+import ru.practicum.explorewithme.event.dto.AdminUpdateEventDto;
+import ru.practicum.explorewithme.event.dto.FullEventDto;
+import ru.practicum.explorewithme.event.model.EventState;
+import ru.practicum.explorewithme.event.service.EventService;
 import ru.practicum.explorewithme.user.dto.ReturnUserDto;
 import ru.practicum.explorewithme.user.dto.UserDto;
 import ru.practicum.explorewithme.user.service.UserService;
 import ru.practicum.explorewithme.validation.Validation;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/admin")
@@ -24,13 +30,13 @@ public class AdminController {
 
     private final UserService userService;
     private final CategoryService categoryService;
-
     private final CompilationService compilationService;
+    private final EventService eventService;
 
     //region /Admin/Users Handlers
 
     @GetMapping("/users")
-    public Collection<ReturnUserDto> getUsersById(@RequestParam(value = "ids") List<Long> ids,
+    public Collection<ReturnUserDto> getUsersById(@RequestParam(value = "ids") Set<Long> ids,
                                                   @RequestParam(value = "from", defaultValue = "0") Integer from,
                                                   @RequestParam(value = "size", defaultValue = "10") Integer size) {
         return userService.getUsersByIdWithPagination(ids, from, size);
@@ -104,6 +110,38 @@ public class AdminController {
     @PatchMapping("/compilations/{compId}/pin")
     public CompilationDto pinCompilation(@PathVariable Long compId) {
         return compilationService.pinCompilation(compId);
+    }
+
+    //endregion
+
+    //region /Admin/Events Handlers
+
+    @GetMapping("/events")
+    public Collection<FullEventDto> findEvents(@RequestParam(value = "users") Set<Long> userIds,
+                                               @RequestParam(value = "states") Set<EventState> states,
+                                               @RequestParam(value = "categories") Set<Long> catIds,
+                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                               @RequestParam(value = "rangeStart") LocalDateTime start,
+                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                               @RequestParam(value = "rangeEnd") LocalDateTime end,
+                                               @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                               @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return eventService.findEvents(userIds, states, catIds, start, end, from, size);
+    }
+
+    @PutMapping("/events/{eventId}")
+    public FullEventDto updateEvent(@PathVariable Long eventId, @Valid @RequestBody AdminUpdateEventDto dto) {
+        return eventService.adminUpdateEvent(eventId, dto);
+    }
+
+    @PatchMapping("/events/{eventId}/publish")
+    public FullEventDto publishEvent(@PathVariable Long eventId) {
+        return eventService.publishEvent(eventId);
+    }
+
+    @PatchMapping("/events/{eventId}/reject")
+    public FullEventDto rejectEvent(@PathVariable Long eventId) {
+        return eventService.rejectEvent(eventId);
     }
 
     //endregion

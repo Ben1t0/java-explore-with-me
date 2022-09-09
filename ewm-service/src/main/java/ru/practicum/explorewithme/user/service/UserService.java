@@ -5,7 +5,6 @@ import ru.practicum.explorewithme.user.dto.UserDto;
 import ru.practicum.explorewithme.user.model.User;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface UserService {
     Collection<UserDto> getAll();
@@ -22,7 +21,7 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    Collection<ReturnUserDto> getUsersByIdWithPagination(List<Long> ids, Integer from, Integer size);
+    Collection<ReturnUserDto> getUsersByIdWithPagination(Collection<Long> ids, Integer from, Integer size);
 
     ReturnUserDto activateUser(Long id);
 }

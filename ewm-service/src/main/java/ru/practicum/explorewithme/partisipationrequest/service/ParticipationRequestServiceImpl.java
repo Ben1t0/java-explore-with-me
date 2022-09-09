@@ -110,7 +110,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     public ParticipationRequestDto cancelRequest(Long userId, Long reqId) {
         getActiveUserOrThrow(userId);
         ParticipationRequest request = getRequestOrThrow(reqId);
-        if(!request.getRequester().getId().equals(userId)){
+        if (!request.getRequester().getId().equals(userId)) {
             throw new RequestNotFoundException(reqId);
         }
         request.setStatus(ParticipationRequestStatus.REJECTED);

@@ -1,9 +1,20 @@
 package ru.practicum.explorewithme.event.dto;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.partisipationrequest.model.ParticipationRequestStatus;
+import ru.practicum.explorewithme.statistic.service.StatisticService;
 
+@Component
 public class EventMapper {
+    private static StatisticService statisticService;
+
+    @Autowired
+    public EventMapper(StatisticService statisticService) {
+        EventMapper.statisticService = statisticService;
+    }
+
     public static FullEventDto toFullDto(Event event) {
         return FullEventDto.builder()
                 .id(event.getId())
@@ -21,6 +32,8 @@ public class EventMapper {
                 .state(event.getState())
                 .confirmedRequests(event.getParticipationRequests().stream()
                         .filter(r -> r.getStatus() == ParticipationRequestStatus.APPROVED).count())
+                .location(new FullEventDto.Location(event.getLatitude(), event.getLongitude()))
+                .views(statisticService.getStatistic("/events/" + event.getId()))
                 .build();
     }
 
@@ -35,6 +48,7 @@ public class EventMapper {
                 .title(event.getTitle())
                 .confirmedRequests(event.getParticipationRequests().stream()
                         .filter(r -> r.getStatus() == ParticipationRequestStatus.APPROVED).count())
+                .views(statisticService.getStatistic("/events/" + event.getId()))
                 .build();
     }
 
@@ -46,6 +60,8 @@ public class EventMapper {
                 .paid(createEventDto.getPaid())
                 .participantLimit(createEventDto.getParticipantLimit())
                 .requestModeration(createEventDto.getRequestModeration())
+                .latitude(createEventDto.getLocation().getLat())
+                .longitude(createEventDto.getLocation().getLon())
                 .title(createEventDto.getTitle())
                 .build();
     }
