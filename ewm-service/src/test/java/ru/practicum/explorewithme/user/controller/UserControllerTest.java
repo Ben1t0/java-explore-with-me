@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.explorewithme.event.dto.CreateEventDto;
 import ru.practicum.explorewithme.event.service.EventService;
+import ru.practicum.explorewithme.partisipationrequest.service.ParticipationRequestService;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -24,6 +25,9 @@ class UserControllerTest {
 
     @MockBean
     private EventService eventService;
+
+    @MockBean
+    private ParticipationRequestService requestService;
 
     @Autowired
     private MockMvc mvc;
@@ -49,9 +53,20 @@ class UserControllerTest {
 
     @Test
     void createEventTest() throws Exception {
+        String event = "{\"annotation\":\"annot\"," +
+                "\"category\":1," +
+                "\"description\":\"decr\"," +
+                "\"eventDate\":\"2022-09-12T01:10:32\"," +
+                "\"location\":{\"lat\":55.3,\"lon\":13.54}," +
+                "\"paid\":true," +
+                "\"participantLimit\":1500," +
+                "\"requestModeration\":true," +
+                "\"title\":\"title\"}";
+
+        createEventDto = mapper.readValue(event, CreateEventDto.class);
 
         mvc.perform(post("/users/1/events")
-                        .content(mapper.writeValueAsString(createEventDto))
+                        .content(event)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

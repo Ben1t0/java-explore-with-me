@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.explorewithme.statistic.client.StatisticClient;
 import ru.practicum.explorewithme.statistic.dto.HitDto;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +35,12 @@ public class StatisticHttpClientService implements StatisticService {
 
     @Override
     public Long getStatistic(String endpoint) {
+        Long startRange = 0L;
+        Long endRange = LocalDateTime.now().plusYears(20).toEpochSecond(ZoneOffset.UTC);
+
         Map<String, Object> parameters = Map.of(
-                "start", 0,
-                "end", 2662752268L,
+                "start", startRange,
+                "end", endRange,
                 "uris", endpoint
         );
 

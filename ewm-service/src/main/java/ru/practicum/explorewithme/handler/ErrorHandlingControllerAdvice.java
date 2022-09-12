@@ -53,7 +53,7 @@ public class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandle
                                                                   WebRequest request) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
         apiError.setMessage("Malformed JSON request");
-        apiError.setReason(ex.getCause().getMessage());
+        apiError.setReason(ex.getCause() != null ? ex.getCause().getMessage() : null);
         return createResponse(apiError);
     }
 

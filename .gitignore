@@ -32,3 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 /ewm-service/src/main/java/ru/practicum/explorewithme/location/
+/gen/
