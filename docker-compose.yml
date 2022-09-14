@@ -8,7 +8,7 @@ services:
     depends_on:
       - stats-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5431/stats
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 
@@ -16,7 +16,7 @@ services:
     image: postgres:14-alpine
     container_name: EWM-Statistic-Database
     ports:
-      - "6540:5431"
+      - "6540:5432"
     volumes:
       - /var/lib/postgresql/data/
     environment:
@@ -49,5 +49,3 @@ services:
       - POSTGRES_DB=ewm
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-        
-        statistic-service.url

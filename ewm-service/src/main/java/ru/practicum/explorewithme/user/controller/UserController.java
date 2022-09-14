@@ -18,6 +18,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
+@Validated
 public class UserController {
 
     private final EventService eventService;

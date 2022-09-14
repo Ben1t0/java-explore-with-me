@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.category.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.category.dto.CategoryDto;
 import ru.practicum.explorewithme.category.service.CategoryService;
@@ -10,6 +11,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/categories")
+@Validated
 public class CategoryController {
 
     private final CategoryService categoryService;

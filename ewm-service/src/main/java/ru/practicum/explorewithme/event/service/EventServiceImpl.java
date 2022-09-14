@@ -186,11 +186,11 @@ public class EventServiceImpl implements EventService {
 
         if (eventToCancel.getState() == EventState.PUBLISHED) {
             throw new EventBadRequestException("Cant cancel published event");
-        } else if (eventToCancel.getState() == EventState.REJECTED) {
+        } else if (eventToCancel.getState() == EventState.CANCELED) {
             throw new EventBadRequestException("Event already canceled");
         }
 
-        eventToCancel.setState(EventState.REJECTED);
+        eventToCancel.setState(EventState.CANCELED);
 
         return EventMapper.toFullDto(eventRepository.save(eventToCancel));
     }
@@ -265,7 +265,7 @@ public class EventServiceImpl implements EventService {
         if (event.getEventDate().isBefore(now.plusHours(1))) {
             throw new EventBadRequestException("Event starts in less than 1 hour");
         }
-        if (event.getState() == EventState.REJECTED) {
+        if (event.getState() == EventState.CANCELED) {
             throw new EventBadRequestException("Event was rejected");
         }
         if (event.getState() == EventState.PUBLISHED) {
@@ -280,13 +280,13 @@ public class EventServiceImpl implements EventService {
     @Override
     public FullEventDto rejectEvent(Long eventId) {
         Event event = getEventByIdOrThrow(eventId);
-        if (event.getState() == EventState.REJECTED) {
+        if (event.getState() == EventState.CANCELED) {
             throw new EventBadRequestException("Event already rejected");
         }
         if (event.getState() == EventState.PUBLISHED) {
             throw new EventBadRequestException("Event was published");
         }
-        event.setState(EventState.REJECTED);
+        event.setState(EventState.CANCELED);
         return EventMapper.toFullDto(eventRepository.save(event));
     }
 

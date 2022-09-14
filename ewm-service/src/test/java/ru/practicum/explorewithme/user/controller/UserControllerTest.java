@@ -56,7 +56,7 @@ class UserControllerTest {
         String event = "{\"annotation\":\"annot\"," +
                 "\"category\":1," +
                 "\"description\":\"decr\"," +
-                "\"eventDate\":\"2022-09-12T01:10:32\"," +
+                "\"eventDate\":\"2022-12-12 01:10:32\"," +
                 "\"location\":{\"lat\":55.3,\"lon\":13.54}," +
                 "\"paid\":true," +
                 "\"participantLimit\":1500," +

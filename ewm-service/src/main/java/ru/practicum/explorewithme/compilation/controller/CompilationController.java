@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.compilation.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.compilation.dto.CompilationDto;
 import ru.practicum.explorewithme.compilation.service.CompilationService;
@@ -10,6 +11,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/compilations")
+@Validated
 public class CompilationController {
 
     private final CompilationService compilationService;

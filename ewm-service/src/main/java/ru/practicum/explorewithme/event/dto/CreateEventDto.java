@@ -1,8 +1,10 @@
 package ru.practicum.explorewithme.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.explorewithme.utils.LocalDateTimeDeserializer;
 import ru.practicum.explorewithme.validation.Validation;
 
 import javax.validation.constraints.Future;
@@ -26,6 +28,7 @@ public class CreateEventDto {
     private String description;
     @NotNull(groups = Validation.OnCreate.class)
     @Future
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     @NotNull(groups = Validation.OnCreate.class)
