@@ -6,7 +6,7 @@ import ru.practicum.statistic.model.HitDto;
 import ru.practicum.statistic.model.StatDto;
 import ru.practicum.statistic.service.StatService;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -20,10 +20,10 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    public Collection<StatDto> getStats(@RequestParam(value = "start") long start,
-                                        @RequestParam(value = "end") long end,
-                                        @RequestParam(value = "uris") Set<String> uris,
-                                        @RequestParam(value = "unique", defaultValue = "false") boolean unique) {
+    public List<StatDto> getStats(@RequestParam(value = "start") long start,
+                                  @RequestParam(value = "end") long end,
+                                  @RequestParam(value = "uris") Set<String> uris,
+                                  @RequestParam(value = "unique", defaultValue = "false") boolean unique) {
         return statService.findStat(start, end, uris, unique);
     }
 }

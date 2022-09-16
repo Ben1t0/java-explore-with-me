@@ -2,22 +2,22 @@ package ru.practicum.explore_with_me.service.compilation;
 
 import ru.practicum.explore_with_me.model.compilation.CompilationDto;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface CompilationService {
     CompilationDto createCompilation(CompilationDto compilationDto);
 
-    void deleteCompilation(Long compId);
+    void deleteCompilation(Long compilationId);
 
-    CompilationDto deleteEventFromCompilation(Long compId, Long eventId);
+    CompilationDto deleteEventFromCompilation(Long compilationId, Long eventId);
 
-    CompilationDto addEventToCompilation(Long compId, Long eventId);
+    CompilationDto addEventToCompilation(Long compilationId, Long eventId);
 
-    CompilationDto unpinCompilation(Long compId);
+    CompilationDto unpinCompilation(Long compilationId);
 
-    CompilationDto pinCompilation(Long compId);
+    CompilationDto pinCompilation(Long compilationId);
 
-    CompilationDto getCompilationDtoOrThrow(long id);
+    CompilationDto getCompilationDto(long compilationId);
 
-    Collection<CompilationDto> getAll(boolean pinned, Integer from, Integer size);
+    List<CompilationDto> getAll(boolean pinned, Integer from, Integer size);
 }

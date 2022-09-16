@@ -14,7 +14,7 @@ import ru.practicum.explore_with_me.service.event.EventService;
 import ru.practicum.explore_with_me.service.user.UserService;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,9 +26,9 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     private final UserService userService;
 
     @Override
-    public Collection<ParticipationRequestDto> getRequestsForUserEvents(Long userId, Long eventId) {
-        Event event = eventService.getEventByIdOrThrow(eventId);
-        User user = userService.getUserByIdOrThrow(userId);
+    public List<ParticipationRequestDto> getRequestsForUserEvents(Long userId, Long eventId) {
+        Event event = eventService.getEvent(eventId);
+        User user = userService.getUser(userId);
         if (!event.getInitiator().getId().equals(user.getId())) {
             throw new EventNotFoundException(eventId);
         }
@@ -39,11 +39,11 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     }
 
     @Override
-    public ParticipationRequestDto approveRequest(Long userId, Long eventId, Long reqId) {
-        userService.getUserByIdOrThrow(userId);
-        ParticipationRequest request = getRequestOrThrow(reqId);
+    public ParticipationRequestDto approveRequest(Long userId, Long eventId, Long requestId) {
+        userService.getUser(userId);
+        ParticipationRequest request = getRequest(requestId);
         if (!request.getEvent().getId().equals(eventId) || !request.getEvent().getInitiator().getId().equals(userId)) {
-            throw new RequestNotFoundException(reqId);
+            throw new RequestNotFoundException(requestId);
         }
 
         if (request.getEvent().getParticipantLimit() > 0) {
@@ -54,7 +54,8 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
                 throw new EventBadRequestException("Event participant limit reached");
             } else if (confirmedRequests == request.getEvent().getParticipantLimit() - 1) {
                 request.getEvent().getParticipationRequests().stream()
-                        .filter(r -> !r.getId().equals(reqId) && r.getStatus() == ParticipationRequestStatus.PENDING)
+                        .filter(r -> !r.getId().equals(requestId) &&
+                                r.getStatus() == ParticipationRequestStatus.PENDING)
                         .peek(r -> r.setStatus(ParticipationRequestStatus.REJECTED))
                         .peek(requestRepository::save);
             }
@@ -65,11 +66,11 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     }
 
     @Override
-    public ParticipationRequestDto rejectRequest(Long userId, Long eventId, Long reqId) {
-        userService.getUserByIdOrThrow(userId);
-        ParticipationRequest request = getRequestOrThrow(reqId);
+    public ParticipationRequestDto rejectRequest(Long userId, Long eventId, Long requestId) {
+        userService.getUser(userId);
+        ParticipationRequest request = getRequest(requestId);
         if (!request.getEvent().getId().equals(eventId) || !request.getEvent().getInitiator().getId().equals(userId)) {
-            throw new RequestNotFoundException(reqId);
+            throw new RequestNotFoundException(requestId);
         }
         request.setStatus(ParticipationRequestStatus.REJECTED);
 
@@ -77,8 +78,8 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     }
 
     @Override
-    public Collection<ParticipationRequestDto> getUserRequests(Long userId) {
-        userService.getUserByIdOrThrow(userId);
+    public List<ParticipationRequestDto> getUserRequests(Long userId) {
+        userService.getUser(userId);
 
         return requestRepository.findAllByRequesterId(userId).stream()
                 .map(RequestMapper::toDto)
@@ -88,8 +89,8 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     @Override
     public ParticipationRequestDto createRequest(Long userId, CreateRequestDto createRequestDto) {
         LocalDateTime now = LocalDateTime.now();
-        User user = userService.getUserByIdOrThrow(userId);
-        Event event = eventService.getEventByIdOrThrow(createRequestDto.getEvent());
+        User user = userService.getUser(userId);
+        Event event = eventService.getEvent(createRequestDto.getEvent());
 
         if (event.getInitiator().getId().equals(userId) || event.getState() != EventState.PUBLISHED) {
             throw new EventNotFoundException(event.getId());
@@ -117,18 +118,18 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     }
 
     @Override
-    public ParticipationRequestDto cancelRequest(Long userId, Long reqId) {
-        userService.getUserByIdOrThrow(userId);
-        ParticipationRequest request = getRequestOrThrow(reqId);
+    public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
+        userService.getUser(userId);
+        ParticipationRequest request = getRequest(requestId);
         if (!request.getRequester().getId().equals(userId)) {
-            throw new RequestNotFoundException(reqId);
+            throw new RequestNotFoundException(requestId);
         }
         request.setStatus(ParticipationRequestStatus.REJECTED);
 
         return RequestMapper.toDto(requestRepository.save(request));
     }
 
-    private ParticipationRequest getRequestOrThrow(Long id) {
+    private ParticipationRequest getRequest(Long id) {
         return requestRepository.findById(id).orElseThrow(() -> new RequestNotFoundException(id));
     }
 }

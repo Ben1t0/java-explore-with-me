@@ -13,7 +13,7 @@ import ru.practicum.explore_with_me.service.request.ParticipationRequestService;
 import ru.practicum.explore_with_me.validation.Validation;
 
 import javax.validation.Valid;
-import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,9 +25,9 @@ public class UserController {
     private final ParticipationRequestService requestService;
 
     @GetMapping("/{userId}/events")
-    public Collection<ShortEventDto> getUserEvents(@PathVariable Long userId,
-                                                   @RequestParam(value = "from", defaultValue = "0") Integer from,
-                                                   @RequestParam(value = "size", defaultValue = "10") Integer size) {
+    public List<ShortEventDto> getUserEvents(@PathVariable Long userId,
+                                             @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                             @RequestParam(value = "size", defaultValue = "10") Integer size) {
         return eventService.getUserEvents(userId, from, size);
     }
 
@@ -54,26 +54,27 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/events/{eventId}/requests")
-    public Collection<ParticipationRequestDto> getRequestsForUserEvents(@PathVariable Long userId, @PathVariable Long eventId) {
+    public List<ParticipationRequestDto> getRequestsForUserEvents(@PathVariable Long userId,
+                                                                  @PathVariable Long eventId) {
         return requestService.getRequestsForUserEvents(userId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/confirm")
     public ParticipationRequestDto approveRequest(@PathVariable Long userId,
                                                   @PathVariable Long eventId,
-                                                  @PathVariable Long reqId) {
-        return requestService.approveRequest(userId, eventId, reqId);
+                                                  @PathVariable(name = "reqId") Long requestId) {
+        return requestService.approveRequest(userId, eventId, requestId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/reject")
     public ParticipationRequestDto rejectRequest(@PathVariable Long userId,
                                                  @PathVariable Long eventId,
-                                                 @PathVariable Long reqId) {
-        return requestService.rejectRequest(userId, eventId, reqId);
+                                                 @PathVariable(name = "reqId") Long requestId) {
+        return requestService.rejectRequest(userId, eventId, requestId);
     }
 
     @GetMapping("/{userId}/requests")
-    public Collection<ParticipationRequestDto> getUserEvents(@PathVariable Long userId) {
+    public List<ParticipationRequestDto> getUserEvents(@PathVariable Long userId) {
         return requestService.getUserRequests(userId);
     }
 
@@ -85,7 +86,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}/requests/{reqId}/cancel")
-    public ParticipationRequestDto patchEvent(@PathVariable Long userId, @PathVariable Long reqId) {
-        return requestService.cancelRequest(userId, reqId);
+    public ParticipationRequestDto patchEvent(@PathVariable Long userId, @PathVariable(name = "reqId") Long requestId) {
+        return requestService.cancelRequest(userId, requestId);
     }
 }

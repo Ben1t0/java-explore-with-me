@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -38,17 +39,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Collection<ShortEventDto> findPublicEvent(String text, Collection<Long> catIds, boolean paid,
-                                                     LocalDateTime start, LocalDateTime end, boolean onlyAvailable,
-                                                     EventSortType sortType, Integer from, Integer size) {
+    public List<ShortEventDto> findPublicEvent(String text, Collection<Long> categoryIds, boolean paid,
+                                               LocalDateTime start, LocalDateTime end, boolean onlyAvailable,
+                                               EventSortType eventSortType, Integer from, Integer size) {
         Collection<Event> events;
         Collection<ShortEventDto> eventDtos = new ArrayList<>();
 
         if (start == null || end == null) {
             LocalDateTime now = LocalDateTime.now();
-            events = eventRepository.findAfterDate(text, catIds, paid, now);
+            events = eventRepository.findAfterDate(text, categoryIds, paid, now);
         } else {
-            events = eventRepository.findBetweenDates(text, catIds, paid, start, end);
+            events = eventRepository.findBetweenDates(text, categoryIds, paid, start, end);
         }
 
         for (Event event : events) {
@@ -66,7 +67,7 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        if (sortType == EventSortType.VIEWS) {
+        if (eventSortType == EventSortType.VIEWS) {
             return eventDtos.stream()
                     .sorted(Comparator.comparingLong(ShortEventDto::getViews))
                     .skip(from)
@@ -83,7 +84,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public FullEventDto getById(Long eventId) {
-        Event event = getEventByIdOrThrow(eventId);
+        Event event = getEvent(eventId);
         if (event.getState() != EventState.PUBLISHED) {
             throw new EventNotFoundException(eventId);
         }
@@ -91,9 +92,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Collection<ShortEventDto> getUserEvents(Long userId, Integer from, Integer size) {
+    public List<ShortEventDto> getUserEvents(Long userId, Integer from, Integer size) {
         Pageable page = new OffsetBasedPageRequest(from, size, Sort.by("id"));
-        userService.getUserByIdOrThrow(userId);
+        userService.getUser(userId);
 
         return eventRepository.findAllByInitiatorId(userId, page).stream()
                 .map(EventMapper::toShortDto)
@@ -107,9 +108,9 @@ public class EventServiceImpl implements EventService {
             throw new EventDateToEarlyException();
         }
 
-        User user = userService.getUserByIdOrThrow(userId);
+        User user = userService.getUser(userId);
 
-        Category category = categoryService.getCategoryByIdOrThrow(createEventDto.getCategory());
+        Category category = categoryService.getCategory(createEventDto.getCategory());
 
         Event event = EventMapper.fromDto(createEventDto);
         event.setCreated(now);
@@ -124,8 +125,8 @@ public class EventServiceImpl implements EventService {
     public FullEventDto patchEvent(Long userId, CreateEventDto createEventDto) {
         LocalDateTime now = LocalDateTime.now();
 
-        User user = userService.getUserByIdOrThrow(userId);
-        Event eventToUpdate = getEventByIdOrThrow(createEventDto.getId()).toBuilder().build();
+        User user = userService.getUser(userId);
+        Event eventToUpdate = getEvent(createEventDto.getId()).toBuilder().build();
 
         if (!eventToUpdate.getInitiator().getId().equals(user.getId())) {
             throw new EventNotFoundException(eventToUpdate.getId());
@@ -152,7 +153,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (createEventDto.getCategory() != null) {
-            eventToUpdate.setCategory(categoryService.getCategoryByIdOrThrow(createEventDto.getCategory()));
+            eventToUpdate.setCategory(categoryService.getCategory(createEventDto.getCategory()));
         }
 
         if (createEventDto.getPaid() != null) {
@@ -172,8 +173,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public FullEventDto getUserEvent(Long userId, Long eventId) {
-        User user = userService.getUserByIdOrThrow(userId);
-        Event event = getEventByIdOrThrow(eventId);
+        User user = userService.getUser(userId);
+        Event event = getEvent(eventId);
 
         if (!event.getInitiator().getId().equals(user.getId())) {
             throw new EventNotFoundException(event.getId());
@@ -183,8 +184,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public FullEventDto cancelUserEvent(Long userId, Long eventId) {
-        User user = userService.getUserByIdOrThrow(userId);
-        Event eventToCancel = getEventByIdOrThrow(eventId).toBuilder().build();
+        User user = userService.getUser(userId);
+        Event eventToCancel = getEvent(eventId).toBuilder().build();
 
         if (!eventToCancel.getInitiator().getId().equals(user.getId())) {
             throw new EventNotFoundException(eventToCancel.getId());
@@ -202,9 +203,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Collection<FullEventDto> findEvents(Collection<Long> userIds, Collection<EventState> states,
-                                               Collection<Long> catIds, LocalDateTime start, LocalDateTime end,
-                                               Integer from, Integer size) {
+    public List<FullEventDto> findEvents(Collection<Long> userIds, Collection<EventState> states,
+                                         Collection<Long> catIds, LocalDateTime start, LocalDateTime end,
+                                         Integer from, Integer size) {
 
         Pageable page = new OffsetBasedPageRequest(from, size, Sort.by("id"));
         Collection<Event> events = eventRepository.findBetweenDatesByUsersStatesCategories(userIds, states, catIds,
@@ -216,48 +217,48 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public FullEventDto adminUpdateEvent(Long eventId, AdminUpdateEventDto dto) {
-        Event eventToUpdate = getEventByIdOrThrow(eventId).toBuilder().build();
+    public FullEventDto adminUpdateEvent(Long eventId, AdminUpdateEventDto adminUpdateEventDto) {
+        Event eventToUpdate = getEvent(eventId).toBuilder().build();
 
-        if (dto.getEventDate() != null) {
-            eventToUpdate.setEventDate(dto.getEventDate());
+        if (adminUpdateEventDto.getEventDate() != null) {
+            eventToUpdate.setEventDate(adminUpdateEventDto.getEventDate());
         }
 
-        if (dto.getAnnotation() != null && !dto.getAnnotation().isBlank()) {
-            eventToUpdate.setAnnotation(dto.getAnnotation());
+        if (adminUpdateEventDto.getAnnotation() != null && !adminUpdateEventDto.getAnnotation().isBlank()) {
+            eventToUpdate.setAnnotation(adminUpdateEventDto.getAnnotation());
         }
 
-        if (dto.getLocation() != null) {
-            if (dto.getLocation().getLon() != null) {
-                eventToUpdate.setLongitude(dto.getLocation().getLon());
+        if (adminUpdateEventDto.getLocation() != null) {
+            if (adminUpdateEventDto.getLocation().getLon() != null) {
+                eventToUpdate.setLongitude(adminUpdateEventDto.getLocation().getLon());
             }
-            if (dto.getLocation().getLat() != null) {
-                eventToUpdate.setLatitude(dto.getLocation().getLat());
+            if (adminUpdateEventDto.getLocation().getLat() != null) {
+                eventToUpdate.setLatitude(adminUpdateEventDto.getLocation().getLat());
             }
         }
 
-        if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
-            eventToUpdate.setDescription(dto.getDescription());
+        if (adminUpdateEventDto.getDescription() != null && !adminUpdateEventDto.getDescription().isBlank()) {
+            eventToUpdate.setDescription(adminUpdateEventDto.getDescription());
         }
 
-        if (dto.getRequestModeration() != null) {
-            eventToUpdate.setRequestModeration(dto.getRequestModeration());
+        if (adminUpdateEventDto.getRequestModeration() != null) {
+            eventToUpdate.setRequestModeration(adminUpdateEventDto.getRequestModeration());
         }
 
-        if (dto.getCategory() != null) {
-            eventToUpdate.setCategory(categoryService.getCategoryByIdOrThrow(dto.getCategory()));
+        if (adminUpdateEventDto.getCategory() != null) {
+            eventToUpdate.setCategory(categoryService.getCategory(adminUpdateEventDto.getCategory()));
         }
 
-        if (dto.getPaid() != null) {
-            eventToUpdate.setPaid(dto.getPaid());
+        if (adminUpdateEventDto.getPaid() != null) {
+            eventToUpdate.setPaid(adminUpdateEventDto.getPaid());
         }
 
-        if (dto.getParticipantLimit() != null) {
-            eventToUpdate.setParticipantLimit(dto.getParticipantLimit());
+        if (adminUpdateEventDto.getParticipantLimit() != null) {
+            eventToUpdate.setParticipantLimit(adminUpdateEventDto.getParticipantLimit());
         }
 
-        if (dto.getTitle() != null && !dto.getTitle().isBlank()) {
-            eventToUpdate.setTitle(dto.getTitle());
+        if (adminUpdateEventDto.getTitle() != null && !adminUpdateEventDto.getTitle().isBlank()) {
+            eventToUpdate.setTitle(adminUpdateEventDto.getTitle());
         }
 
         return EventMapper.toFullDto(eventRepository.save(eventToUpdate));
@@ -267,7 +268,7 @@ public class EventServiceImpl implements EventService {
     public FullEventDto publishEvent(Long eventId) {
         LocalDateTime now = LocalDateTime.now();
 
-        Event event = getEventByIdOrThrow(eventId);
+        Event event = getEvent(eventId);
         if (event.getEventDate().isBefore(now.plusHours(1))) {
             throw new EventBadRequestException("Event starts in less than 1 hour");
         }
@@ -285,7 +286,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public FullEventDto rejectEvent(Long eventId) {
-        Event event = getEventByIdOrThrow(eventId);
+        Event event = getEvent(eventId);
         if (event.getState() == EventState.CANCELED) {
             throw new EventBadRequestException("Event already rejected");
         }
@@ -297,7 +298,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getEventByIdOrThrow(long id) {
-        return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
+    public Event getEvent(long eventId) {
+        return eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
     }
 }

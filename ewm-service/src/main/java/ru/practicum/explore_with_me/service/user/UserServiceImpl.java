@@ -13,6 +13,7 @@ import ru.practicum.explore_with_me.repository.UserRepository;
 import ru.practicum.explore_with_me.utils.OffsetBasedPageRequest;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,12 +22,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public Collection<UserDto> getAll() {
+    public List<UserDto> getAll() {
         return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     @Override
-    public Collection<ReturnUserDto> getUsersByIdWithPagination(Collection<Long> ids, Integer from, Integer size) {
+    public List<ReturnUserDto> getUsersByIdWithPagination(Collection<Long> ids, Integer from, Integer size) {
         Pageable page = new OffsetBasedPageRequest(from, size, Sort.by("id"));
         return userRepository.findAllByIdIn(ids, page).stream()
                 .map(UserMapper::toReturnUserDto)
@@ -34,13 +35,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByIdOrThrow(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    public User getUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     @Override
-    public UserDto getUserDtoByOrThrow(Long id) {
-        return UserMapper.toUserDto(getUserByIdOrThrow(id));
+    public UserDto getUserDto(Long userId) {
+        return UserMapper.toUserDto(getUser(userId));
     }
 
     @Override
@@ -51,14 +52,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto) {
-        getUserByIdOrThrow(userDto.getId());
+        getUser(userDto.getId());
         User user = UserMapper.toUser(userDto);
         return UserMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public UserDto patchUser(UserDto userDto) {
-        User user = getUserByIdOrThrow(userDto.getId());
+        User user = getUser(userDto.getId());
 
         User userToUpdate = User.builder()
                 .id(user.getId())
@@ -78,8 +79,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
-        getUserByIdOrThrow(id);
-        userRepository.deleteById(id);
+    public void deleteUser(Long userId) {
+        getUser(userId);
+        userRepository.deleteById(userId);
     }
 }

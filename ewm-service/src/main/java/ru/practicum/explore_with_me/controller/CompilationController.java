@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore_with_me.model.compilation.CompilationDto;
 import ru.practicum.explore_with_me.service.compilation.CompilationService;
 
-import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,14 +17,14 @@ public class CompilationController {
     private final CompilationService compilationService;
 
     @GetMapping
-    public Collection<CompilationDto> getAllCompilations(@RequestParam(value = "pinned") boolean pinned,
-                                                         @RequestParam(value = "from", defaultValue = "0") Integer from,
-                                                         @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return compilationService.getAll(pinned, from, size);
+    public List<CompilationDto> getAllCompilations(@RequestParam(value = "pinned") boolean isPinned,
+                                                   @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                   @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return compilationService.getAll(isPinned, from, size);
     }
 
     @GetMapping("/{id}")
-    public CompilationDto getCompilationById(@PathVariable Long id) {
-        return compilationService.getCompilationDtoOrThrow(id);
+    public CompilationDto getCompilationById(@PathVariable(name = "id") Long compilationId) {
+        return compilationService.getCompilationDto(compilationId);
     }
 }

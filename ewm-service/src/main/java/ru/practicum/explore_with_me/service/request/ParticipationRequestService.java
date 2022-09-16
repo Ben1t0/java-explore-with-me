@@ -3,18 +3,18 @@ package ru.practicum.explore_with_me.service.request;
 import ru.practicum.explore_with_me.model.request.CreateRequestDto;
 import ru.practicum.explore_with_me.model.request.ParticipationRequestDto;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface ParticipationRequestService {
-    Collection<ParticipationRequestDto> getRequestsForUserEvents(Long userId, Long eventId);
+    List<ParticipationRequestDto> getRequestsForUserEvents(Long userId, Long eventId);
 
-    ParticipationRequestDto approveRequest(Long userId, Long eventId, Long reqId);
+    ParticipationRequestDto approveRequest(Long userId, Long eventId, Long requestId);
 
-    ParticipationRequestDto rejectRequest(Long userId, Long eventId, Long reqId);
+    ParticipationRequestDto rejectRequest(Long userId, Long eventId, Long requestId);
 
-    Collection<ParticipationRequestDto> getUserRequests(Long userId);
+    List<ParticipationRequestDto> getUserRequests(Long userId);
 
     ParticipationRequestDto createRequest(Long userId, CreateRequestDto createRequestDto);
 
-    ParticipationRequestDto cancelRequest(Long userId, Long reqId);
+    ParticipationRequestDto cancelRequest(Long userId, Long requestId);
 }

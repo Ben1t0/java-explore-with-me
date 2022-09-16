@@ -2,13 +2,13 @@ package ru.practicum.statistic.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.statistic.model.EndpointHit;
 import ru.practicum.statistic.model.HitDto;
 import ru.practicum.statistic.model.StatDto;
-import ru.practicum.statistic.model.EndpointHit;
 import ru.practicum.statistic.repository.HitRepository;
 
 import java.time.Instant;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,32 +34,7 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
-    public Collection<StatDto> findStat(long start, long end, Set<String> uris, boolean unique) {
-        //Map<String, List<EndpointHit>> hits = repository.findAllByUriInAndTimestampBetween(uris, start, end).stream()
-        //                .collect(Collectors.groupingBy(EndpointHit::getUri));
-
-       /*var list = repository.findAllByUriInAndTimestampBetween(uris, start, end).stream()
-                .collect(Collectors.groupingBy(EndpointHit::getUri)).values().stream()
-                .map(hits -> {
-                    return StatDto.builder()
-                            .uri(hits.get(0).getUri())
-                            .app(hits.get(0).getApp())
-                            .hits(unique ? hits.stream().filter(distinctByKey(EndpointHit::getIp)).count() : hits.size())
-                            .build();
-                }).collect(Collectors.toList());*/
-
-        /*Collection<StatDto> stats = new ArrayList<>();
-
-
-        for (List<EndpointHit> entry : hits.values()) {
-            stats.add(StatDto.builder()
-                    .uri(entry.get(0).getUri())
-                    .app(entry.get(0).getApp())
-                    .hits(unique ? entry.stream().filter(distinctByKey(EndpointHit::getIp)).count() : entry.size())
-                    .build());
-        }*/
-
-
+    public List<StatDto> findStat(long start, long end, Set<String> uris, boolean unique) {
         return repository.findAllByUriInAndTimestampBetween(uris, start, end).stream()
                 .collect(Collectors.groupingBy(EndpointHit::getUri)).values().stream()
                 .map(hits -> StatDto.builder()

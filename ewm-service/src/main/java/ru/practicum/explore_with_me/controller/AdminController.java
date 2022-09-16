@@ -19,7 +19,7 @@ import ru.practicum.explore_with_me.validation.Validation;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -36,10 +36,10 @@ public class AdminController {
     //region /Admin/Users Handlers
 
     @GetMapping("/users")
-    public Collection<ReturnUserDto> getUsersById(@RequestParam(value = "ids") Set<Long> ids,
-                                                  @RequestParam(value = "from", defaultValue = "0") Integer from,
-                                                  @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return userService.getUsersByIdWithPagination(ids, from, size);
+    public List<ReturnUserDto> getUsersById(@RequestParam(value = "ids") Set<Long> userIds,
+                                            @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return userService.getUsersByIdWithPagination(userIds, from, size);
     }
 
     @PostMapping("/users")
@@ -49,8 +49,8 @@ public class AdminController {
     }
 
     @DeleteMapping("/users/{userId}")
-    public void deleteUser(@PathVariable(name = "userId") Long id) {
-        userService.deleteUser(id);
+    public void deleteUser(@PathVariable(name = "userId") Long userId) {
+        userService.deleteUser(userId);
     }
 
     //endregion
@@ -70,8 +70,8 @@ public class AdminController {
     }
 
     @DeleteMapping("/categories/{catId}")
-    public void deleteCategory(@PathVariable Long catId) {
-        categoryService.deleteCategory(catId);
+    public void deleteCategory(@PathVariable(name = "catId") Long categoryId) {
+        categoryService.deleteCategory(categoryId);
     }
 
     //endregion
@@ -84,28 +84,30 @@ public class AdminController {
     }
 
     @DeleteMapping("/compilations/{compId}")
-    public void deleteCompilation(@PathVariable Long compId) {
-        compilationService.deleteCompilation(compId);
+    public void deleteCompilation(@PathVariable(name = "compId") Long compilationId) {
+        compilationService.deleteCompilation(compilationId);
     }
 
     @DeleteMapping("/compilations/{compId}/events/{eventId}")
-    public CompilationDto deleteEventFromCompilation(@PathVariable Long compId, @PathVariable Long eventId) {
-        return compilationService.deleteEventFromCompilation(compId, eventId);
+    public CompilationDto deleteEventFromCompilation(@PathVariable(name = "compId") Long compilationId,
+                                                     @PathVariable(name = "eventId") Long eventId) {
+        return compilationService.deleteEventFromCompilation(compilationId, eventId);
     }
 
     @PatchMapping("/compilations/{compId}/events/{eventId}")
-    public CompilationDto addEventToCompilation(@PathVariable Long compId, @PathVariable Long eventId) {
-        return compilationService.addEventToCompilation(compId, eventId);
+    public CompilationDto addEventToCompilation(@PathVariable(name = "compId") Long compilationId,
+                                                @PathVariable Long eventId) {
+        return compilationService.addEventToCompilation(compilationId, eventId);
     }
 
     @DeleteMapping("/compilations/{compId}/pin")
-    public CompilationDto unpinCompilation(@PathVariable Long compId) {
-        return compilationService.unpinCompilation(compId);
+    public CompilationDto unpinCompilation(@PathVariable(name = "compId") Long compilationId) {
+        return compilationService.unpinCompilation(compilationId);
     }
 
     @PatchMapping("/compilations/{compId}/pin")
-    public CompilationDto pinCompilation(@PathVariable Long compId) {
-        return compilationService.pinCompilation(compId);
+    public CompilationDto pinCompilation(@PathVariable(name = "compId") Long compilationId) {
+        return compilationService.pinCompilation(compilationId);
     }
 
     //endregion
@@ -113,21 +115,22 @@ public class AdminController {
     //region /Admin/Events Handlers
 
     @GetMapping("/events")
-    public Collection<FullEventDto> findEvents(@RequestParam(value = "users") Set<Long> userIds,
-                                               @RequestParam(value = "states") Set<EventState> states,
-                                               @RequestParam(value = "categories") Set<Long> catIds,
-                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                               @RequestParam(value = "rangeStart") LocalDateTime start,
-                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                               @RequestParam(value = "rangeEnd") LocalDateTime end,
-                                               @RequestParam(value = "from", defaultValue = "0") Integer from,
-                                               @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return eventService.findEvents(userIds, states, catIds, start, end, from, size);
+    public List<FullEventDto> findEvents(@RequestParam(value = "users") Set<Long> userIds,
+                                         @RequestParam(value = "states") Set<EventState> states,
+                                         @RequestParam(value = "categories") Set<Long> categoryIds,
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @RequestParam(value = "rangeStart") LocalDateTime start,
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @RequestParam(value = "rangeEnd") LocalDateTime end,
+                                         @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                         @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return eventService.findEvents(userIds, states, categoryIds, start, end, from, size);
     }
 
     @PutMapping("/events/{eventId}")
-    public FullEventDto updateEvent(@PathVariable Long eventId, @Valid @RequestBody AdminUpdateEventDto dto) {
-        return eventService.adminUpdateEvent(eventId, dto);
+    public FullEventDto updateEvent(@PathVariable Long eventId,
+                                    @Valid @RequestBody AdminUpdateEventDto adminUpdateEventDto) {
+        return eventService.adminUpdateEvent(eventId, adminUpdateEventDto);
     }
 
     @PatchMapping("/events/{eventId}/publish")

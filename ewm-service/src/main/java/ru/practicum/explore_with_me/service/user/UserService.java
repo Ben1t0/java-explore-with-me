@@ -5,13 +5,14 @@ import ru.practicum.explore_with_me.model.user.User;
 import ru.practicum.explore_with_me.model.user.UserDto;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface UserService {
-    Collection<UserDto> getAll();
+    List<UserDto> getAll();
 
-    User getUserByIdOrThrow(Long id);
+    User getUser(Long userId);
 
-    UserDto getUserDtoByOrThrow(Long id);
+    UserDto getUserDto(Long userId);
 
     ReturnUserDto createUser(UserDto userDto);
 
@@ -19,7 +20,7 @@ public interface UserService {
 
     UserDto patchUser(UserDto userDto);
 
-    void deleteUser(Long id);
+    void deleteUser(Long userId);
 
-    Collection<ReturnUserDto> getUsersByIdWithPagination(Collection<Long> ids, Integer from, Integer size);
+    List<ReturnUserDto> getUsersByIdWithPagination(Collection<Long> userIds, Integer from, Integer size);
 }

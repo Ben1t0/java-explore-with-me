@@ -11,7 +11,7 @@ import ru.practicum.explore_with_me.repository.CompilationRepository;
 import ru.practicum.explore_with_me.service.event.EventService;
 import ru.practicum.explore_with_me.utils.OffsetBasedPageRequest;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto createCompilation(CompilationDto compilationDto) {
         Compilation compilation = Compilation.builder()
                 .events(compilationDto.getEvents().stream()
-                        .map(eventService::getEventByIdOrThrow)
+                        .map(eventService::getEvent)
                         .collect(Collectors.toList()))
                 .title(compilationDto.getTitle())
                 .pinned(compilationDto.getPinned())
@@ -33,24 +33,24 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public void deleteCompilation(Long compId) {
-        getCompilationOrThrow(compId);
-        compilationRepository.deleteById(compId);
+    public void deleteCompilation(Long compilationId) {
+        getCompilation(compilationId);
+        compilationRepository.deleteById(compilationId);
     }
 
     @Override
-    public CompilationDto deleteEventFromCompilation(Long compId, Long eventId) {
-        Compilation compilation = getCompilationOrThrow(compId);
-        Event event = eventService.getEventByIdOrThrow(eventId);
+    public CompilationDto deleteEventFromCompilation(Long compilationId, Long eventId) {
+        Compilation compilation = getCompilation(compilationId);
+        Event event = eventService.getEvent(eventId);
         compilation.getEvents().remove(event);
 
         return CompilationMapper.toDto(compilationRepository.save(compilation));
     }
 
     @Override
-    public CompilationDto addEventToCompilation(Long compId, Long eventId) {
-        Compilation compilation = getCompilationOrThrow(compId);
-        Event event = eventService.getEventByIdOrThrow(eventId);
+    public CompilationDto addEventToCompilation(Long compilationId, Long eventId) {
+        Compilation compilation = getCompilation(compilationId);
+        Event event = eventService.getEvent(eventId);
 
         compilation.getEvents().add(event);
 
@@ -58,32 +58,32 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public CompilationDto unpinCompilation(Long compId) {
-        Compilation compilation = getCompilationOrThrow(compId);
+    public CompilationDto unpinCompilation(Long compilationId) {
+        Compilation compilation = getCompilation(compilationId);
         compilation.setPinned(false);
         return CompilationMapper.toDto(compilationRepository.save(compilation));
     }
 
     @Override
-    public CompilationDto pinCompilation(Long compId) {
-        Compilation compilation = getCompilationOrThrow(compId);
+    public CompilationDto pinCompilation(Long compilationId) {
+        Compilation compilation = getCompilation(compilationId);
         compilation.setPinned(true);
         return CompilationMapper.toDto(compilationRepository.save(compilation));
     }
 
     @Override
-    public Collection<CompilationDto> getAll(boolean pinned, Integer from, Integer size) {
+    public List<CompilationDto> getAll(boolean pinned, Integer from, Integer size) {
         return compilationRepository.findCompilationByPinnedIs(pinned, new OffsetBasedPageRequest(from, size)).stream()
                 .map(CompilationMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CompilationDto getCompilationDtoOrThrow(long id) {
-        return CompilationMapper.toDto(getCompilationOrThrow(id));
+    public CompilationDto getCompilationDto(long compilationId) {
+        return CompilationMapper.toDto(getCompilation(compilationId));
     }
 
-    private Compilation getCompilationOrThrow(long id) {
+    private Compilation getCompilation(long id) {
         return compilationRepository.findById(id).orElseThrow(() -> new CompilationNotFoundException(id));
     }
 }

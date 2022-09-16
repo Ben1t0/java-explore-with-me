@@ -34,3 +34,4 @@ build/
 /ewm-service/src/main/java/ru/practicum/explore_with_me/location/
 /gen/
 /ewm-service/src/test/java/ru/practicum/explore_with_me/location/repository/
+/ewm-service/src/main/java/ru/practicum/explore_with_me/utils/ErrorStatus.java

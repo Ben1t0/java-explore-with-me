@@ -4,15 +4,16 @@ import ru.practicum.explore_with_me.model.event.*;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 public interface EventService {
-    Collection<ShortEventDto> findPublicEvent(String text, Collection<Long> catIds, boolean paid,
-                                              LocalDateTime start, LocalDateTime end, boolean onlyAvailable,
-                                              EventSortType sortType, Integer from, Integer size);
+    List<ShortEventDto> findPublicEvent(String text, Collection<Long> categoryIds, boolean paid,
+                                        LocalDateTime start, LocalDateTime end, boolean onlyAvailable,
+                                        EventSortType eventSortType, Integer from, Integer size);
 
     FullEventDto getById(Long eventId);
 
-    Collection<ShortEventDto> getUserEvents(Long userId, Integer from, Integer size);
+    List<ShortEventDto> getUserEvents(Long userId, Integer from, Integer size);
 
     FullEventDto createEvent(Long userId, CreateEventDto createEventDto);
 
@@ -22,13 +23,13 @@ public interface EventService {
 
     FullEventDto cancelUserEvent(Long userId, Long eventId);
 
-    Event getEventByIdOrThrow(long id);
+    Event getEvent(long eventId);
 
-    Collection<FullEventDto> findEvents(Collection<Long> userIds, Collection<EventState> states,
-                                        Collection<Long> catIds, LocalDateTime start, LocalDateTime end, Integer from,
-                                        Integer size);
+    List<FullEventDto> findEvents(Collection<Long> userIds, Collection<EventState> states,
+                                  Collection<Long> categoryIds, LocalDateTime start, LocalDateTime end, Integer from,
+                                  Integer size);
 
-    FullEventDto adminUpdateEvent(Long eventId, AdminUpdateEventDto dto);
+    FullEventDto adminUpdateEvent(Long eventId, AdminUpdateEventDto adminUpdateEventDto);
 
     FullEventDto publishEvent(Long eventId);
 
