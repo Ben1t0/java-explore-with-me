@@ -29,7 +29,6 @@ services:
     container_name: ExploreWithMe-Server
     depends_on:
       - ewm-db
-      - stats-server
     ports:
       - "8080:8080"
     environment:
