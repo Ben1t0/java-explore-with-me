@@ -184,21 +184,12 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public FullEventDto cancelUserEvent(Long userId, Long eventId) {
-        User user = userService.getUser(userId);
+        userService.getUser(userId);
         Event eventToCancel = getEvent(eventId).toBuilder().build();
 
-        if (!eventToCancel.getInitiator().getId().equals(user.getId())) {
-            throw new EventNotFoundException(eventToCancel.getId());
+        if (EventValidator.canEventBeCanceledByUser(eventToCancel, userId)) {
+            eventToCancel.setState(EventState.CANCELED);
         }
-
-        if (eventToCancel.getState() == EventState.PUBLISHED) {
-            throw new EventBadRequestException("Cant cancel published event");
-        } else if (eventToCancel.getState() == EventState.CANCELED) {
-            throw new EventBadRequestException("Event already canceled");
-        }
-
-        eventToCancel.setState(EventState.CANCELED);
-
         return EventMapper.toFullDto(eventRepository.save(eventToCancel));
     }
 
@@ -267,33 +258,20 @@ public class EventServiceImpl implements EventService {
     @Override
     public FullEventDto publishEvent(Long eventId) {
         LocalDateTime now = LocalDateTime.now();
-
         Event event = getEvent(eventId);
-        if (event.getEventDate().isBefore(now.plusHours(1))) {
-            throw new EventBadRequestException("Event starts in less than 1 hour");
+        if (EventValidator.canEventBePublished(event, now)) {
+            event.setState(EventState.PUBLISHED);
+            event.setPublished(now);
         }
-        if (event.getState() == EventState.CANCELED) {
-            throw new EventBadRequestException("Event was rejected");
-        }
-        if (event.getState() == EventState.PUBLISHED) {
-            throw new EventBadRequestException("Event already published");
-        }
-        event.setState(EventState.PUBLISHED);
-        event.setPublished(now);
-
         return EventMapper.toFullDto(eventRepository.save(event));
     }
 
     @Override
     public FullEventDto rejectEvent(Long eventId) {
         Event event = getEvent(eventId);
-        if (event.getState() == EventState.CANCELED) {
-            throw new EventBadRequestException("Event already rejected");
+        if (EventValidator.canEventBeCanceled(event)) {
+            event.setState(EventState.CANCELED);
         }
-        if (event.getState() == EventState.PUBLISHED) {
-            throw new EventBadRequestException("Event was published");
-        }
-        event.setState(EventState.CANCELED);
         return EventMapper.toFullDto(eventRepository.save(event));
     }
 
