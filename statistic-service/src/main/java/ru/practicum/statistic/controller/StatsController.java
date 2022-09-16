@@ -2,8 +2,8 @@ package ru.practicum.statistic.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.statistic.dto.HitDto;
-import ru.practicum.statistic.dto.StatDto;
+import ru.practicum.statistic.model.HitDto;
+import ru.practicum.statistic.model.StatDto;
 import ru.practicum.statistic.service.StatService;
 
 import java.util.Collection;

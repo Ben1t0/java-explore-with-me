@@ -1,7 +1,7 @@
 package ru.practicum.statistic.service;
 
-import ru.practicum.statistic.dto.HitDto;
-import ru.practicum.statistic.dto.StatDto;
+import ru.practicum.statistic.model.HitDto;
+import ru.practicum.statistic.model.StatDto;
 
 import java.util.Collection;
 import java.util.Set;

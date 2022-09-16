@@ -31,5 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
-/ewm-service/src/main/java/ru/practicum/explorewithme/location/
+/ewm-service/src/main/java/ru/practicum/explore_with_me/location/
 /gen/
+/ewm-service/src/test/java/ru/practicum/explore_with_me/location/repository/
