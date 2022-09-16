@@ -39,42 +39,42 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<ShortEventDto> findPublicEvent(String text, Collection<Long> categoryIds, boolean paid,
-                                               LocalDateTime start, LocalDateTime end, boolean onlyAvailable,
-                                               EventSortType eventSortType, Integer from, Integer size) {
-        Collection<Event> events;
-        Collection<ShortEventDto> eventDtos = new ArrayList<>();
+    public List<ShortEventDto> findPublicEvent(FindPublicEventOptions options, Integer from, Integer size) {
+        List<Event> events;
 
-        if (start == null || end == null) {
-            LocalDateTime now = LocalDateTime.now();
-            events = eventRepository.findAfterDate(text, categoryIds, paid, now);
+        if (options.getStart() == null || options.getEnd() == null) {
+            events = eventRepository.findAfterDate(options.getText(), options.getCategoryIds(), options.isPaid(),
+                    LocalDateTime.now());
         } else {
-            events = eventRepository.findBetweenDates(text, categoryIds, paid, start, end);
+            events = eventRepository.findBetweenDates(options.getText(), options.getCategoryIds(), options.isPaid(),
+                    options.getStart(), options.getEnd());
         }
+
+        List<ShortEventDto> returnEvents = new ArrayList<>();
 
         for (Event event : events) {
             ShortEventDto dto = EventMapper.toShortDto(event);
             if (event.getParticipantLimit() > 0) {
-                if (onlyAvailable) {
+                if (options.isOnlyAvailable()) {
                     if (dto.getConfirmedRequests() < event.getParticipantLimit()) {
-                        eventDtos.add(dto);
+                        returnEvents.add(dto);
                     }
                 } else {
-                    eventDtos.add(dto);
+                    returnEvents.add(dto);
                 }
             } else {
-                eventDtos.add(dto);
+                returnEvents.add(dto);
             }
         }
 
-        if (eventSortType == EventSortType.VIEWS) {
-            return eventDtos.stream()
+        if (options.getEventSortType() == EventSortType.VIEWS) {
+            return returnEvents.stream()
                     .sorted(Comparator.comparingLong(ShortEventDto::getViews))
                     .skip(from)
                     .limit(size)
                     .collect(Collectors.toList());
         } else {
-            return eventDtos.stream()
+            return returnEvents.stream()
                     .sorted(Comparator.comparing(ShortEventDto::getEventDate))
                     .skip(from)
                     .limit(size)

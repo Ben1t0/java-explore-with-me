@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore_with_me.model.event.EventSortType;
+import ru.practicum.explore_with_me.model.event.FindPublicEventOptions;
 import ru.practicum.explore_with_me.model.event.FullEventDto;
 import ru.practicum.explore_with_me.model.event.ShortEventDto;
 import ru.practicum.explore_with_me.service.event.EventService;
@@ -37,8 +38,10 @@ public class EventController {
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          HttpServletRequest request) {
 
-        List<ShortEventDto> response = eventService.findPublicEvent(text, categoryIds, paid, start, end,
-                onlyAvailable, eventSortType, from, size);
+        FindPublicEventOptions options = new FindPublicEventOptions(text, categoryIds, paid, start, end,
+                onlyAvailable, eventSortType);
+
+        List<ShortEventDto> response = eventService.findPublicEvent(options, from, size);
         try {
             statisticService.hitEndpoint(request.getRequestURI(), request.getRemoteAddr());
         } catch (Exception ex) {

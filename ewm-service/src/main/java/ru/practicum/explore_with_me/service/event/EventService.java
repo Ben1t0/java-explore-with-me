@@ -7,9 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 public interface EventService {
-    List<ShortEventDto> findPublicEvent(String text, Collection<Long> categoryIds, boolean paid,
-                                        LocalDateTime start, LocalDateTime end, boolean onlyAvailable,
-                                        EventSortType eventSortType, Integer from, Integer size);
+    List<ShortEventDto> findPublicEvent(FindPublicEventOptions options, Integer from, Integer size);
 
     FullEventDto getById(Long eventId);
 
