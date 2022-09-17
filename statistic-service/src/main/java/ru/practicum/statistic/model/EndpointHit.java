@@ -3,6 +3,7 @@ package ru.practicum.statistic.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -21,5 +22,5 @@ public class EndpointHit {
     private String app;
     private String uri;
     private String ip;
-    private Long timestamp;
+    private LocalDateTime timestamp;
 }

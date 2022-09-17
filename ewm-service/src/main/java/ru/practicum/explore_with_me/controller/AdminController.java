@@ -8,6 +8,7 @@ import ru.practicum.explore_with_me.model.category.CategoryDto;
 import ru.practicum.explore_with_me.model.compilation.CompilationDto;
 import ru.practicum.explore_with_me.model.event.AdminUpdateEventDto;
 import ru.practicum.explore_with_me.model.event.EventState;
+import ru.practicum.explore_with_me.model.event.FindUserEventOptions;
 import ru.practicum.explore_with_me.model.event.FullEventDto;
 import ru.practicum.explore_with_me.model.user.ReturnUserDto;
 import ru.practicum.explore_with_me.model.user.UserDto;
@@ -118,13 +119,15 @@ public class AdminController {
     public List<FullEventDto> findEvents(@RequestParam(value = "users") Set<Long> userIds,
                                          @RequestParam(value = "states") Set<EventState> states,
                                          @RequestParam(value = "categories") Set<Long> categoryIds,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                          @RequestParam(value = "rangeStart") LocalDateTime start,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                          @RequestParam(value = "rangeEnd") LocalDateTime end,
                                          @RequestParam(value = "from", defaultValue = "0") Integer from,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return eventService.findEvents(userIds, states, categoryIds, start, end, from, size);
+        FindUserEventOptions options = new FindUserEventOptions(userIds, states, categoryIds, start, end);
+
+        return eventService.findEvents(options, from, size);
     }
 
     @PutMapping("/events/{eventId}")

@@ -9,6 +9,7 @@ import ru.practicum.explore_with_me.model.statistic_client.StatisticHitEndpointD
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 public class StatisticHttpClientService implements StatisticService {
 
     private final StatisticClient client;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private static final String SERVICE_NAME = "Explore-With-Me";
 
@@ -38,8 +40,8 @@ public class StatisticHttpClientService implements StatisticService {
 
     @Override
     public Long getStatistic(String endpoint) {
-        Long startRange = 0L;
-        Long endRange = LocalDateTime.now().plusYears(20).toEpochSecond(ZoneOffset.UTC);
+        String startRange = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC).format(formatter);
+        String endRange = LocalDateTime.now().plusYears(20).withNano(0).format(formatter);
 
         Map<String, Object> parameters = Map.of(
                 "start", startRange,

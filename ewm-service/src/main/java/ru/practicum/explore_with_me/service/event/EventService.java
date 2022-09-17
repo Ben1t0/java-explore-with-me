@@ -2,8 +2,6 @@ package ru.practicum.explore_with_me.service.event;
 
 import ru.practicum.explore_with_me.model.event.*;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 
 public interface EventService {
@@ -23,9 +21,7 @@ public interface EventService {
 
     Event getEvent(long eventId);
 
-    List<FullEventDto> findEvents(Collection<Long> userIds, Collection<EventState> states,
-                                  Collection<Long> categoryIds, LocalDateTime start, LocalDateTime end, Integer from,
-                                  Integer size);
+    List<FullEventDto> findEvents(FindUserEventOptions options, Integer from, Integer size);
 
     FullEventDto adminUpdateEvent(Long eventId, AdminUpdateEventDto adminUpdateEventDto);
 

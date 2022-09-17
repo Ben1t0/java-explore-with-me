@@ -6,15 +6,14 @@ import java.util.stream.Collectors;
 
 public class CompilationMapper {
     public static CompilationDto toDto(Compilation compilation) {
-        if (compilation != null) {
-            return CompilationDto.builder()
-                    .id(compilation.getId())
-                    .pinned(compilation.isPinned())
-                    .title(compilation.getTitle())
-                    .events(compilation.getEvents().stream().map(Event::getId).collect(Collectors.toList()))
-                    .build();
-        } else {
+        if (compilation == null) {
             return null;
         }
+        return CompilationDto.builder()
+                .id(compilation.getId())
+                .pinned(compilation.isPinned())
+                .title(compilation.getTitle())
+                .events(compilation.getEvents().stream().map(Event::getId).collect(Collectors.toList()))
+                .build();
     }
 }

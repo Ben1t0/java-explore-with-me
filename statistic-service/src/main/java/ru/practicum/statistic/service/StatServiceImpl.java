@@ -3,11 +3,11 @@ package ru.practicum.statistic.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.statistic.model.EndpointHit;
-import ru.practicum.statistic.model.HitDto;
+import ru.practicum.statistic.model.EndpointHitDto;
 import ru.practicum.statistic.model.StatDto;
 import ru.practicum.statistic.repository.HitRepository;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,19 +22,19 @@ public class StatServiceImpl implements StatService {
     private final HitRepository repository;
 
     @Override
-    public HitDto create(HitDto dto) {
+    public EndpointHitDto create(EndpointHitDto dto) {
         EndpointHit hit = EndpointHit.builder()
-                .timestamp(Instant.now().getEpochSecond())
+                .timestamp(LocalDateTime.now())
                 .ip(dto.getIp())
                 .app(dto.getApp())
                 .uri(dto.getUri())
                 .build();
 
-        return HitDto.from(repository.save(hit));
+        return EndpointHitDto.from(repository.save(hit));
     }
 
     @Override
-    public List<StatDto> findStat(long start, long end, Set<String> uris, boolean unique) {
+    public List<StatDto> findStat(LocalDateTime start, LocalDateTime end, Set<String> uris, boolean unique) {
         return repository.findAllByUriInAndTimestampBetween(uris, start, end).stream()
                 .collect(Collectors.groupingBy(EndpointHit::getUri)).values().stream()
                 .map(hits -> StatDto.builder()

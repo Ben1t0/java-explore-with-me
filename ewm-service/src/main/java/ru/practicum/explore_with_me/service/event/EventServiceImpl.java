@@ -19,7 +19,6 @@ import ru.practicum.explore_with_me.utils.OffsetBasedPageRequest;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -194,13 +193,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<FullEventDto> findEvents(Collection<Long> userIds, Collection<EventState> states,
-                                         Collection<Long> catIds, LocalDateTime start, LocalDateTime end,
-                                         Integer from, Integer size) {
+    public List<FullEventDto> findEvents(FindUserEventOptions options, Integer from, Integer size) {
 
         Pageable page = new OffsetBasedPageRequest(from, size, Sort.by("id"));
-        Collection<Event> events = eventRepository.findBetweenDatesByUsersStatesCategories(userIds, states, catIds,
-                start, end, page);
+        List<Event> events = eventRepository.findBetweenDatesByUsersStatesCategories(options.getUserIds(),
+                options.getStates(), options.getCategoryIds(), options.getStart(), options.getEnd(), page);
 
         return events.stream()
                 .map(EventMapper::toFullDto)
