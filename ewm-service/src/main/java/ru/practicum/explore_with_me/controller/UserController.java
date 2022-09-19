@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore_with_me.model.event.CreateEventDto;
 import ru.practicum.explore_with_me.model.event.FullEventDto;
 import ru.practicum.explore_with_me.model.event.ShortEventDto;
-import ru.practicum.explore_with_me.model.request.CreateRequestDto;
+import ru.practicum.explore_with_me.model.event.UpdateEventDto;
 import ru.practicum.explore_with_me.model.request.ParticipationRequestDto;
 import ru.practicum.explore_with_me.service.event.EventService;
 import ru.practicum.explore_with_me.service.request.ParticipationRequestService;
@@ -39,8 +39,8 @@ public class UserController {
 
     @PatchMapping("/{userId}/events")
     @Validated(Validation.OnPatch.class)
-    public FullEventDto patchEvent(@PathVariable Long userId, @Valid @RequestBody CreateEventDto createEventDto) {
-        return eventService.patchEvent(userId, createEventDto);
+    public FullEventDto patchEvent(@PathVariable Long userId, @Valid @RequestBody UpdateEventDto updateEventDto) {
+        return eventService.patchEvent(userId, updateEventDto);
     }
 
     @GetMapping("/{userId}/events/{eventId}")
@@ -81,8 +81,8 @@ public class UserController {
     @PostMapping("/{userId}/requests")
     @Validated(Validation.OnCreate.class)
     public ParticipationRequestDto createEvent(@PathVariable Long userId,
-                                               @Valid @RequestBody CreateRequestDto createRequestDto) {
-        return requestService.createRequest(userId, createRequestDto);
+                                               @RequestParam Long eventId) {
+        return requestService.createRequest(userId, eventId);
     }
 
     @PatchMapping("/{userId}/requests/{reqId}/cancel")

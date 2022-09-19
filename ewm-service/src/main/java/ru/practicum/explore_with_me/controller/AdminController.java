@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore_with_me.model.category.CategoryDto;
 import ru.practicum.explore_with_me.model.compilation.CompilationDto;
+import ru.practicum.explore_with_me.model.compilation.ReturnCompilationDto;
 import ru.practicum.explore_with_me.model.event.AdminUpdateEventDto;
 import ru.practicum.explore_with_me.model.event.EventState;
 import ru.practicum.explore_with_me.model.event.FindUserEventOptions;
@@ -80,7 +81,7 @@ public class AdminController {
     //region /Admin/Compilations Handlers
 
     @PostMapping("/compilations")
-    public CompilationDto createCompilation(@Valid @RequestBody CompilationDto compilationDto) {
+    public ReturnCompilationDto createCompilation(@Valid @RequestBody CompilationDto compilationDto) {
         return compilationService.createCompilation(compilationDto);
     }
 
@@ -119,9 +120,9 @@ public class AdminController {
     public List<FullEventDto> findEvents(@RequestParam(value = "users") Set<Long> userIds,
                                          @RequestParam(value = "states") Set<EventState> states,
                                          @RequestParam(value = "categories") Set<Long> categoryIds,
-                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                          @RequestParam(value = "rangeStart") LocalDateTime start,
-                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                          @RequestParam(value = "rangeEnd") LocalDateTime end,
                                          @RequestParam(value = "from", defaultValue = "0") Integer from,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size) {

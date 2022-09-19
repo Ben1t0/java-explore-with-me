@@ -121,11 +121,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public FullEventDto patchEvent(Long userId, CreateEventDto createEventDto) {
+    public FullEventDto patchEvent(Long userId, UpdateEventDto updateEventDto) {
         LocalDateTime now = LocalDateTime.now();
 
         User user = userService.getUser(userId);
-        Event eventToUpdate = getEvent(createEventDto.getId()).toBuilder().build();
+        Event eventToUpdate = getEvent(updateEventDto.getEventId()).toBuilder().build();
 
         if (!eventToUpdate.getInitiator().getId().equals(user.getId())) {
             throw new EventNotFoundException(eventToUpdate.getId());
@@ -135,36 +135,36 @@ public class EventServiceImpl implements EventService {
             throw new EventBadRequestException("Cant modify published event");
         }
 
-        if (createEventDto.getEventDate() != null) {
-            if (createEventDto.getEventDate().isBefore(now.plusHours(2))) {
+        if (updateEventDto.getEventDate() != null) {
+            if (updateEventDto.getEventDate().isBefore(now.plusHours(2))) {
                 throw new EventDateToEarlyException();
             } else {
-                eventToUpdate.setEventDate(createEventDto.getEventDate());
+                eventToUpdate.setEventDate(updateEventDto.getEventDate());
             }
         }
 
-        if (createEventDto.getAnnotation() != null && !createEventDto.getAnnotation().isBlank()) {
-            eventToUpdate.setAnnotation(createEventDto.getAnnotation());
+        if (updateEventDto.getAnnotation() != null && !updateEventDto.getAnnotation().isBlank()) {
+            eventToUpdate.setAnnotation(updateEventDto.getAnnotation());
         }
 
-        if (createEventDto.getDescription() != null && !createEventDto.getDescription().isBlank()) {
-            eventToUpdate.setDescription(createEventDto.getDescription());
+        if (updateEventDto.getDescription() != null && !updateEventDto.getDescription().isBlank()) {
+            eventToUpdate.setDescription(updateEventDto.getDescription());
         }
 
-        if (createEventDto.getCategory() != null) {
-            eventToUpdate.setCategory(categoryService.getCategory(createEventDto.getCategory()));
+        if (updateEventDto.getCategory() != null) {
+            eventToUpdate.setCategory(categoryService.getCategory(updateEventDto.getCategory()));
         }
 
-        if (createEventDto.getPaid() != null) {
-            eventToUpdate.setPaid(createEventDto.getPaid());
+        if (updateEventDto.getPaid() != null) {
+            eventToUpdate.setPaid(updateEventDto.getPaid());
         }
 
-        if (createEventDto.getParticipantLimit() != null) {
-            eventToUpdate.setParticipantLimit(createEventDto.getParticipantLimit());
+        if (updateEventDto.getParticipantLimit() != null) {
+            eventToUpdate.setParticipantLimit(updateEventDto.getParticipantLimit());
         }
 
-        if (createEventDto.getTitle() != null && !createEventDto.getTitle().isBlank()) {
-            eventToUpdate.setTitle(createEventDto.getTitle());
+        if (updateEventDto.getTitle() != null && !updateEventDto.getTitle().isBlank()) {
+            eventToUpdate.setTitle(updateEventDto.getTitle());
         }
 
         return EventMapper.toFullDto(eventRepository.save(eventToUpdate));

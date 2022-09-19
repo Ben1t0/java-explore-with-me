@@ -7,7 +7,10 @@ import ru.practicum.explore_with_me.exception.EventNotFoundException;
 import ru.practicum.explore_with_me.exception.RequestNotFoundException;
 import ru.practicum.explore_with_me.model.event.Event;
 import ru.practicum.explore_with_me.model.event.EventState;
-import ru.practicum.explore_with_me.model.request.*;
+import ru.practicum.explore_with_me.model.request.ParticipationRequest;
+import ru.practicum.explore_with_me.model.request.ParticipationRequestDto;
+import ru.practicum.explore_with_me.model.request.ParticipationRequestStatus;
+import ru.practicum.explore_with_me.model.request.RequestMapper;
 import ru.practicum.explore_with_me.model.user.User;
 import ru.practicum.explore_with_me.repository.ParticipationRequestRepository;
 import ru.practicum.explore_with_me.service.event.EventService;
@@ -48,7 +51,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
         if (request.getEvent().getParticipantLimit() > 0) {
             long confirmedRequests = request.getEvent().getParticipationRequests().stream()
-                    .filter(r -> r.getStatus() == ParticipationRequestStatus.APPROVED)
+                    .filter(r -> r.getStatus() == ParticipationRequestStatus.CONFIRMED)
                     .count();
             if (confirmedRequests >= request.getEvent().getParticipantLimit()) {
                 throw new EventBadRequestException("Event participant limit reached");
@@ -56,11 +59,11 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
                 request.getEvent().getParticipationRequests().stream()
                         .filter(r -> !r.getId().equals(requestId) &&
                                 r.getStatus() == ParticipationRequestStatus.PENDING)
-                        .peek(r -> r.setStatus(ParticipationRequestStatus.REJECTED))
+                        .peek(r -> r.setStatus(ParticipationRequestStatus.CANCELED))
                         .peek(requestRepository::save);
             }
         }
-        request.setStatus(ParticipationRequestStatus.APPROVED);
+        request.setStatus(ParticipationRequestStatus.CONFIRMED);
 
         return RequestMapper.toDto(requestRepository.save(request));
     }
@@ -87,17 +90,17 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     }
 
     @Override
-    public ParticipationRequestDto createRequest(Long userId, CreateRequestDto createRequestDto) {
+    public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         LocalDateTime now = LocalDateTime.now();
         User user = userService.getUser(userId);
-        Event event = eventService.getEvent(createRequestDto.getEvent());
+        Event event = eventService.getEvent(eventId);
 
         if (event.getInitiator().getId().equals(userId) || event.getState() != EventState.PUBLISHED) {
             throw new EventNotFoundException(event.getId());
         }
 
         if (event.getParticipantLimit() > 0 && event.getParticipationRequests().stream()
-                .filter(r -> r.getStatus() == ParticipationRequestStatus.APPROVED)
+                .filter(r -> r.getStatus() == ParticipationRequestStatus.CONFIRMED)
                 .count() >= event.getParticipantLimit()) {
             throw new EventBadRequestException("Event participant limit reached");
         }
@@ -111,7 +114,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (event.isRequestModeration()) {
             request.setStatus(ParticipationRequestStatus.PENDING);
         } else {
-            request.setStatus(ParticipationRequestStatus.APPROVED);
+            request.setStatus(ParticipationRequestStatus.CONFIRMED);
         }
 
         return RequestMapper.toDto(requestRepository.save(request));
@@ -124,7 +127,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (!request.getRequester().getId().equals(userId)) {
             throw new RequestNotFoundException(requestId);
         }
-        request.setStatus(ParticipationRequestStatus.REJECTED);
+        request.setStatus(ParticipationRequestStatus.CANCELED);
 
         return RequestMapper.toDto(requestRepository.save(request));
     }

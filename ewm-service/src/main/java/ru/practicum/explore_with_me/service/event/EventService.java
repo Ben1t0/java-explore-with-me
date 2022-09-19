@@ -13,7 +13,7 @@ public interface EventService {
 
     FullEventDto createEvent(Long userId, CreateEventDto createEventDto);
 
-    FullEventDto patchEvent(Long userId, CreateEventDto createEventDto);
+    FullEventDto patchEvent(Long userId, UpdateEventDto updateEventDto);
 
     FullEventDto getUserEvent(Long userId, Long eventId);
 

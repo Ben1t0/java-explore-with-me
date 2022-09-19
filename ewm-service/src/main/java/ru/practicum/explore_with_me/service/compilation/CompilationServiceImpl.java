@@ -6,6 +6,7 @@ import ru.practicum.explore_with_me.exception.CompilationNotFoundException;
 import ru.practicum.explore_with_me.model.compilation.Compilation;
 import ru.practicum.explore_with_me.model.compilation.CompilationDto;
 import ru.practicum.explore_with_me.model.compilation.CompilationMapper;
+import ru.practicum.explore_with_me.model.compilation.ReturnCompilationDto;
 import ru.practicum.explore_with_me.model.event.Event;
 import ru.practicum.explore_with_me.repository.CompilationRepository;
 import ru.practicum.explore_with_me.service.event.EventService;
@@ -21,7 +22,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final EventService eventService;
 
     @Override
-    public CompilationDto createCompilation(CompilationDto compilationDto) {
+    public ReturnCompilationDto createCompilation(CompilationDto compilationDto) {
         Compilation compilation = Compilation.builder()
                 .events(compilationDto.getEvents().stream()
                         .map(eventService::getEvent)
@@ -29,7 +30,7 @@ public class CompilationServiceImpl implements CompilationService {
                 .title(compilationDto.getTitle())
                 .pinned(compilationDto.getPinned())
                 .build();
-        return CompilationMapper.toDto(compilationRepository.save(compilation));
+        return CompilationMapper.toReturnDto(compilationRepository.save(compilation));
     }
 
     @Override

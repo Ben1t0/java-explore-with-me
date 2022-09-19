@@ -31,7 +31,7 @@ public class EventMapper {
                 .participantLimit(event.getParticipantLimit())
                 .state(event.getState())
                 .confirmedRequests(event.getParticipationRequests().stream()
-                        .filter(r -> r.getStatus() == ParticipationRequestStatus.APPROVED).count())
+                        .filter(r -> r.getStatus() == ParticipationRequestStatus.CONFIRMED).count())
                 .location(new FullEventDto.Location(event.getLatitude(), event.getLongitude()))
                 .views(statisticService != null ?
                         statisticService.getStatistic("/events/" + event.getId()) : null)
@@ -51,7 +51,7 @@ public class EventMapper {
                 .paid(event.isPaid())
                 .title(event.getTitle())
                 .confirmedRequests(event.getParticipationRequests().stream()
-                        .filter(r -> r.getStatus() == ParticipationRequestStatus.APPROVED).count())
+                        .filter(r -> r.getStatus() == ParticipationRequestStatus.CONFIRMED).count())
                 .views(statisticService != null ?
                         statisticService.getStatistic("/events/" + event.getId()) : null)
                 .build();

@@ -28,9 +28,9 @@ public class EventController {
     public List<ShortEventDto> getEvents(@RequestParam(value = "text", defaultValue = "") String text,
                                          @RequestParam(value = "categories") Set<Long> categoryIds,
                                          @RequestParam(value = "paid") boolean paid,
-                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                          @RequestParam(value = "rangeStart", required = false) LocalDateTime start,
-                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                          @RequestParam(value = "rangeEnd", required = false) LocalDateTime end,
                                          @RequestParam(value = "onlyAvailable") boolean onlyAvailable,
                                          @RequestParam(value = "sort") EventSortType eventSortType,
