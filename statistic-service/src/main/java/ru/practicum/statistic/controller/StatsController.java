@@ -22,10 +22,10 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    public List<StatDto> getStats(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    public List<StatDto> getStats(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                   @RequestParam(value = "start")
                                   LocalDateTime start,
-                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                   @RequestParam(value = "end")
                                   LocalDateTime end,
                                   @RequestParam(value = "uris") Set<String> uris,

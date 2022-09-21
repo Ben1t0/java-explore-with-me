@@ -35,7 +35,7 @@ class StatsControllerTest {
 
     @Test
     void testGetStatParams() throws Exception {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
         LocalDateTime startRange = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
         LocalDateTime endRange = LocalDateTime.now().plusYears(20).withNano(0);

@@ -19,7 +19,7 @@ import java.util.Map;
 public class StatisticHttpClientService implements StatisticService {
 
     private final StatisticClient client;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private static final String SERVICE_NAME = "Explore-With-Me";
 
