@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.explore_with_me.model.location.LocationDto;
-import ru.practicum.explore_with_me.model.location.LocationMapper;
 import ru.practicum.explore_with_me.exception.LocationBadRequestData;
 import ru.practicum.explore_with_me.exception.LocationNotFoundException;
 import ru.practicum.explore_with_me.model.location.Location;
+import ru.practicum.explore_with_me.model.location.LocationDto;
+import ru.practicum.explore_with_me.model.location.LocationMapper;
 import ru.practicum.explore_with_me.repository.LocationRepository;
 import ru.practicum.explore_with_me.utils.OffsetBasedPageRequest;
 
@@ -35,7 +35,6 @@ public class LocationServiceImpl implements LocationService {
         Pageable page = new OffsetBasedPageRequest(from, size, Sort.by("name"));
         if (longitude != null && latitude != null) {
             if (longitude > 180 || longitude < -180) {
-                //TODO: add LocationBadRequestData to handler
                 throw new LocationBadRequestData("Longitude must be in range [-180; 180]");
             }
             if (latitude > 90 || latitude < -90) {
@@ -58,7 +57,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationDto patchLocation(LocationDto locationDto) {
-        Location location = getLocationOrThrow(locationDto.getId()).toBuilder().build();
+        Location location = getLocation(locationDto.getId()).toBuilder().build();
         if (locationDto.getName() != null) {
             location.setName(locationDto.getName());
         }
@@ -79,8 +78,8 @@ public class LocationServiceImpl implements LocationService {
         repository.deleteById(id);
     }
 
-    //TODO: add LocationNotFoundException to handler
-    private Location getLocationOrThrow(long id) {
+    @Override
+    public Location getLocation(long id) {
         return repository.findById(id).orElseThrow(() -> new LocationNotFoundException(id));
     }
 }

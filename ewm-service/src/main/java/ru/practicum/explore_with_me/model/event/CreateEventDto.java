@@ -42,7 +42,7 @@ public class CreateEventDto {
     private Boolean requestModeration = true;
     @NotNull(groups = Validation.OnCreate.class)
     private String title;
-
+    private Long locationId;
     @Builder
     @Data
     public static class Location {

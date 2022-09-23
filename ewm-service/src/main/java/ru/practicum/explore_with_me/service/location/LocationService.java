@@ -17,4 +17,6 @@ public interface LocationService {
     void deleteLocation(long id);
 
     LocationDto patchLocation(LocationDto location);
+
+    Location getLocation(long id);
 }

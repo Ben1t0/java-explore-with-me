@@ -62,4 +62,10 @@ public class EventController {
         return response;
     }
 
+    @GetMapping("/{locId}")
+    public List<ShortEventDto> getEventsInLocation(@PathVariable("locId") Long locationId,
+                                                   @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                   @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return eventService.getPublishedEventsInLocation(locationId, from, size);
+    }
 }

@@ -28,4 +28,8 @@ public interface EventService {
     FullEventDto publishEvent(Long eventId);
 
     FullEventDto rejectEvent(Long eventId);
+
+    List<ShortEventDto> getPublishedEventsInLocation(Long locationId, Integer from, Integer size);
+
+    List<FullEventDto> getEventsInLocation(Long locationId, Integer from, Integer size);
 }

@@ -150,9 +150,17 @@ public class AdminController {
         return eventService.rejectEvent(eventId);
     }
 
+    @GetMapping("/events/{locId}")
+    public List<FullEventDto> getEventsInLocation(@PathVariable("locId") Long locationId,
+                                                  @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                  @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return eventService.getEventsInLocation(locationId, from, size);
+    }
+
     //endregion
 
     //region /Admin/Locations Handlers
+
     @PostMapping("/locations")
     @Validated(Validation.OnCreate.class)
     public LocationDto createLocation(@Valid @RequestBody LocationDto location) {
