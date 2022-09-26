@@ -43,6 +43,7 @@ public class CreateEventDto {
     @NotNull(groups = Validation.OnCreate.class)
     private String title;
     private Long locationId;
+
     @Builder
     @Data
     public static class Location {

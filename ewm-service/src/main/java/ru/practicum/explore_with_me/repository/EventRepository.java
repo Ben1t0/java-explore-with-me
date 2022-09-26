@@ -44,5 +44,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event as e " +
             "WHERE function('distance',:latitude,:longitude,e.latitude,e.longitude) <= :radius " +
             "ORDER BY function('distance',:latitude,:longitude,e.latitude,e.longitude)")
-    List<Event> getEventsNearPoint(double latitude, double longitude, double radius, Pageable pageable);
+    List<Event> getEventsNearPoint(float latitude, float longitude, float radius, Pageable pageable);
+
+    @Query("SELECT e FROM Event as e " +
+            "WHERE function('distance',:latitude,:longitude,e.latitude,e.longitude) <= :radius " +
+            "AND e.state = 'PUBLISHED' " +
+            "ORDER BY function('distance',:latitude,:longitude,e.latitude,e.longitude)")
+    List<Event> getPublicEventsNearPoint(float latitude, float longitude, float radius, Pageable pageable);
 }

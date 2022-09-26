@@ -19,8 +19,8 @@ public class LocationController {
     @GetMapping("/locations")
     public List<LocationDto> getAllLocations(@RequestParam(value = "from", defaultValue = "0") Integer from,
                                              @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                             @RequestParam(value = "longitude", required = false) Double lon,
-                                             @RequestParam(value = "latitude", required = false) Double lat) {
+                                             @RequestParam(value = "longitude", required = false) Float lon,
+                                             @RequestParam(value = "latitude", required = false) Float lat) {
         return service.getAllLocations(from, size, lon, lat);
     }
 }

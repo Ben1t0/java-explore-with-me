@@ -297,33 +297,28 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
     }
 
-    private List<Event> getEventsNearPoint(double latitude, double longitude, double radius, Pageable pageable) {
-        return eventRepository.getEventsNearPoint(latitude, longitude, radius, pageable);
-    }
-
     /**
      * Admin method find all events near location
-     *
      */
     @Override
     public List<FullEventDto> getEventsInLocation(Long locationId, Integer from, Integer size) {
         Location location = locationService.getLocation(locationId);
         Pageable page = new OffsetBasedPageRequest(from, size);
-        return getEventsNearPoint(location.getLatitude(), location.getLongitude(), location.getRadius(), page).stream()
+        return eventRepository.getEventsNearPoint(location.getLatitude(), location.getLongitude(),
+                        location.getRadius(), page).stream()
                 .map(EventMapper::toFullDto)
                 .collect(Collectors.toList());
     }
 
     /**
      * Method for all users find PUBLISHED events near location
-     *
      */
     @Override
     public List<ShortEventDto> getPublishedEventsInLocation(Long locationId, Integer from, Integer size) {
         Location location = locationService.getLocation(locationId);
         Pageable page = new OffsetBasedPageRequest(from, size);
-        return getEventsNearPoint(location.getLatitude(), location.getLongitude(), location.getRadius(), page).stream()
-                .filter(e -> e.getState() == EventState.PUBLISHED)
+        return eventRepository.getPublicEventsNearPoint(location.getLatitude(), location.getLongitude(),
+                        location.getRadius(), page).stream()
                 .map(EventMapper::toShortDto)
                 .collect(Collectors.toList());
     }

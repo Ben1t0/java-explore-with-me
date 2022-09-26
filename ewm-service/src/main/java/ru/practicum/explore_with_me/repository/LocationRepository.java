@@ -10,9 +10,9 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     @Query("SELECT l FROM Location as l " +
             "WHERE function('distance',:latitude,:longitude,l.latitude,l.longitude) <= l.radius " +
             "ORDER BY function('distance',:latitude,:longitude,l.latitude,l.longitude)")
-    List<Location> getNearestLocations(double latitude, double longitude);
+    List<Location> getNearestLocations(float latitude, float longitude);
 
     @Query(nativeQuery = true, value = "SELECT distance(?1,?2,l.latitude,l.longitude) " +
             "FROM locations AS l")
-    List<Double> getDistances(double latitude, double longitude);
+    List<Double> getDistances(float latitude, float longitude);
 }

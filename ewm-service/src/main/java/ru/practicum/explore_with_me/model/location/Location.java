@@ -19,7 +19,7 @@ public class Location {
     @Setter(AccessLevel.NONE)
     private Long id;
     private String name;
-    private double latitude;
-    private double longitude;
-    private double radius;
+    private float  latitude;
+    private float longitude;
+    private float radius;
 }

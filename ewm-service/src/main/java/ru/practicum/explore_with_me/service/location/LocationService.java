@@ -10,7 +10,7 @@ public interface LocationService {
 
     Optional<Location> getNearestToPointLocation(float latitude, float longitude);
 
-    List<LocationDto> getAllLocations(Integer from, Integer size, Double longitude, Double latitude);
+    List<LocationDto> getAllLocations(Integer from, Integer size, Float longitude, Float latitude);
 
     LocationDto createLocation(LocationDto location);
 

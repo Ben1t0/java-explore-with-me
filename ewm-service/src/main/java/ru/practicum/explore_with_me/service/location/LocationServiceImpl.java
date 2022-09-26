@@ -31,7 +31,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public List<LocationDto> getAllLocations(Integer from, Integer size, Double longitude, Double latitude) {
+    public List<LocationDto> getAllLocations(Integer from, Integer size, Float longitude, Float latitude) {
         Pageable page = new OffsetBasedPageRequest(from, size, Sort.by("name"));
         if (longitude != null && latitude != null) {
             if (longitude > 180 || longitude < -180) {

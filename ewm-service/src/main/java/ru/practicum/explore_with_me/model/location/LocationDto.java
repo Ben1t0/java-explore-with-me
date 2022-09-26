@@ -20,11 +20,11 @@ public class LocationDto {
     @NotNull(groups = Validation.OnCreate.class)
     @Max(value = 90, message = "Latitude must be less than 90 degrees")
     @Min(value = -90, message = "Latitude must be greater than -90 degrees")
-    private Double latitude;
+    private Float latitude;
     @NotNull(groups = Validation.OnCreate.class)
     @Max(value = 180, message = "Longitude must be less than 180 degrees")
     @Min(value = -180, message = "Longitude must be greater than -180 degrees")
-    private Double longitude;
+    private Float longitude;
     @NotNull(groups = Validation.OnCreate.class)
-    private Double radius;
+    private Float radius;
 }
