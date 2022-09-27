@@ -28,9 +28,9 @@ public class EventController {
     public List<ShortEventDto> getEvents(@RequestParam(value = "text", defaultValue = "") String text,
                                          @RequestParam(value = "categories") Set<Long> categoryIds,
                                          @RequestParam(value = "paid") boolean paid,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                          @RequestParam(value = "rangeStart", required = false) LocalDateTime start,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                          @RequestParam(value = "rangeEnd", required = false) LocalDateTime end,
                                          @RequestParam(value = "onlyAvailable") boolean onlyAvailable,
                                          @RequestParam(value = "sort") EventSortType eventSortType,
@@ -51,9 +51,9 @@ public class EventController {
         return response;
     }
 
-    @GetMapping("/{catId}")
-    public FullEventDto getEventById(@PathVariable(name = "catId") Long categoryId, HttpServletRequest request) {
-        FullEventDto response = eventService.getById(categoryId);
+    @GetMapping("/{id}")
+    public FullEventDto getEventById(@PathVariable(name = "id") Long eventId, HttpServletRequest request) {
+        FullEventDto response = eventService.getById(eventId);
         try {
             statisticService.hitEndpoint(request.getRequestURI(), request.getRemoteAddr());
         } catch (Exception ex) {
@@ -62,7 +62,7 @@ public class EventController {
         return response;
     }
 
-    @GetMapping("/{locId}")
+    @GetMapping("/location/{locId}")
     public List<ShortEventDto> getEventsInLocation(@PathVariable("locId") Long locationId,
                                                    @RequestParam(value = "from", defaultValue = "0") Integer from,
                                                    @RequestParam(value = "size", defaultValue = "10") Integer size) {

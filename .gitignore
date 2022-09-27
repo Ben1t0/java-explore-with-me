@@ -34,3 +34,4 @@ build/
 /gen/
 /ewm-service/src/main/java/ru/practicum/explore_with_me/utils/ErrorStatus.java
 /ewm-service/src/test/java/ru/practicum/explore_with_me/repository/LocationRepositoryTest.java
+/ewm-service/src/main/java/ru/practicum/explore_with_me/model/location/GeoPoint.java

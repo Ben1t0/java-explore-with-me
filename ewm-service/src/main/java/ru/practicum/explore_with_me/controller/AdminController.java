@@ -123,9 +123,9 @@ public class AdminController {
     public List<FullEventDto> findEvents(@RequestParam(value = "users") Set<Long> userIds,
                                          @RequestParam(value = "states") Set<EventState> states,
                                          @RequestParam(value = "categories") Set<Long> categoryIds,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                          @RequestParam(value = "rangeStart") LocalDateTime start,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                          @RequestParam(value = "rangeEnd") LocalDateTime end,
                                          @RequestParam(value = "from", defaultValue = "0") Integer from,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size) {
