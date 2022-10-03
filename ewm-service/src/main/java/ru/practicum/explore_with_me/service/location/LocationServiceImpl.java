@@ -13,22 +13,12 @@ import ru.practicum.explore_with_me.repository.LocationRepository;
 import ru.practicum.explore_with_me.utils.OffsetBasedPageRequest;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class LocationServiceImpl implements LocationService {
     private final LocationRepository repository;
-
-    @Override
-    public Optional<Location> getNearestToPointLocation(float latitude, float longitude) {
-        List<Location> locations = repository.getNearestLocations(latitude, longitude);
-        if (locations.size() > 0) {
-            return Optional.of(locations.get(0));
-        }
-        return Optional.empty();
-    }
 
     @Override
     public List<LocationDto> getAllLocations(Integer from, Integer size, Float longitude, Float latitude) {
@@ -41,13 +31,13 @@ public class LocationServiceImpl implements LocationService {
                 throw new LocationBadRequestData("Latitude must be in range [-90; 90]");
             }
 
-            return repository.getNearestLocations(latitude, longitude).stream()
-                    .skip(from)
-                    .limit(size)
+            return repository.getNearestLocations(latitude, longitude, page).stream()
                     .map(LocationMapper::toDto)
                     .collect(Collectors.toList());
         }
-        return repository.findAll(page).stream().map(LocationMapper::toDto).collect(Collectors.toList());
+        return repository.findAll(page).stream()
+                .map(LocationMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
