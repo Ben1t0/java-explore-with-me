@@ -11,11 +11,13 @@ import ru.practicum.explore_with_me.model.event.AdminUpdateEventDto;
 import ru.practicum.explore_with_me.model.event.EventState;
 import ru.practicum.explore_with_me.model.event.FindUserEventOptions;
 import ru.practicum.explore_with_me.model.event.FullEventDto;
+import ru.practicum.explore_with_me.model.location.LocationDto;
 import ru.practicum.explore_with_me.model.user.ReturnUserDto;
 import ru.practicum.explore_with_me.model.user.UserDto;
 import ru.practicum.explore_with_me.service.category.CategoryService;
 import ru.practicum.explore_with_me.service.compilation.CompilationService;
 import ru.practicum.explore_with_me.service.event.EventService;
+import ru.practicum.explore_with_me.service.location.LocationService;
 import ru.practicum.explore_with_me.service.user.UserService;
 import ru.practicum.explore_with_me.validation.Validation;
 
@@ -34,6 +36,7 @@ public class AdminController {
     private final CategoryService categoryService;
     private final CompilationService compilationService;
     private final EventService eventService;
+    private final LocationService locationService;
 
     //region /Admin/Users Handlers
 
@@ -120,9 +123,9 @@ public class AdminController {
     public List<FullEventDto> findEvents(@RequestParam(value = "users") Set<Long> userIds,
                                          @RequestParam(value = "states") Set<EventState> states,
                                          @RequestParam(value = "categories") Set<Long> categoryIds,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                          @RequestParam(value = "rangeStart") LocalDateTime start,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                          @RequestParam(value = "rangeEnd") LocalDateTime end,
                                          @RequestParam(value = "from", defaultValue = "0") Integer from,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size) {
@@ -145,6 +148,34 @@ public class AdminController {
     @PatchMapping("/events/{eventId}/reject")
     public FullEventDto rejectEvent(@PathVariable Long eventId) {
         return eventService.rejectEvent(eventId);
+    }
+
+    @GetMapping("/events/{locId}")
+    public List<FullEventDto> getEventsInLocation(@PathVariable("locId") Long locationId,
+                                                  @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                  @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return eventService.getEventsInLocation(locationId, from, size);
+    }
+
+    //endregion
+
+    //region /Admin/Locations Handlers
+
+    @PostMapping("/locations")
+    @Validated(Validation.OnCreate.class)
+    public LocationDto createLocation(@Valid @RequestBody LocationDto location) {
+        return locationService.createLocation(location);
+    }
+
+    @PatchMapping("/locations")
+    @Validated(Validation.OnPatch.class)
+    public LocationDto updateLocation(@Valid @RequestBody LocationDto location) {
+        return locationService.patchLocation(location);
+    }
+
+    @DeleteMapping("/locations")
+    public void deleteLocation(long id) {
+        locationService.deleteLocation(id);
     }
 
     //endregion
